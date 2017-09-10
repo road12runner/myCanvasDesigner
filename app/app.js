@@ -146,3 +146,31 @@ function getCoordinates(img) {
     maxY: maxY
   }
 }
+
+
+$('#export').click(function() {
+
+  canvas.remove(template);
+  var dataURL = canvas.toDataURL({
+    format: 'png',
+    left: 100,
+    top: 100,
+    width: 261,
+    height:153,
+    multiplier: 0.5
+  });
+
+  var imgId = new Date().getTime();
+  $.ajax('http://localhost:9999/pcs/api/v1/designers/submit/' + imgId, {
+    method: 'POST',
+    data: {img:  dataURL},
+    success: function(){
+      console.log('success');
+    },
+    error: function() {
+      console.log('error');
+    }
+  });
+
+  //console.log('dataUrl', dataURL);
+});
