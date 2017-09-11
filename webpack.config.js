@@ -1,14 +1,15 @@
 const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
-  entry: "./entry.js",
+  entry: "./app/index.js",
   output: {
-    path: __dirname,
+    path: path.resolve('dist'),
     filename: "bundle.js"
   },
   module: {
     loaders: [
-      { test: /\.css$/, loader: "style!css" }
+      { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
     ]
   }
 };
