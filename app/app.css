@@ -4,5 +4,11 @@ body {
 
 .my-title {
     font-size: 32px;
-    color: blue;
+    color: deeppink;
+}
+
+.designer-canvas {
+    width: 500px;
+    height: 500px;
+    border: 1px dotted lightcyan;
 }
