@@ -49,5 +49,5 @@ export const selectCategory = (catId) => {
 
 
 export const selectImage = (imgId) => {
-  return {type: 'SELECTED_IMAGE', payload: imId};
+  return {type: 'SELECTED_IMAGE', payload: imgId};
 };

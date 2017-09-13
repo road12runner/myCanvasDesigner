@@ -6,7 +6,7 @@ import GalleryImage from './galleryImage';
 class Gallery extends  Component {
   constructor() {
     super();
-
+    this.handleSelectImage = this.handleSelectImage.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -31,7 +31,6 @@ class Gallery extends  Component {
     const selectedCategory = this.props.selectedCategory;
     const imageCategories = this.props.imageCategories;
 
-    console.log('render images', selectedCategory, imageCategories);
     if (selectedCategory && imageCategories) {
       const category = imageCategories[selectedCategory];
       if (category) {
@@ -47,12 +46,11 @@ class Gallery extends  Component {
   }
 
   handleSelectImage(img) {
-    console.log(img);
+    this.props.selectImage(img.id);
   }
   render() {
     const categories = this.props.gallery;
     const imageCategories = this.props.imageCategories;
-    console.log('imageCategories', imageCategories);
     return(
       <div>
         <h1>Gallery</h1>
@@ -73,4 +71,4 @@ const mapStateToProps = (state) => {
 };
 
 
-export default connect(mapStateToProps, {getImageCategory})(Gallery);
+export default connect(mapStateToProps, {getImageCategory, selectImage})(Gallery);
