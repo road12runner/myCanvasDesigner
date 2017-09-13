@@ -11,7 +11,7 @@ import App from './app';
 import reducers from './reducers';
 
 
-import './plain-canvas';
+//import './plain-canvas';
 import './app.css';
 
 ReactDOM.render(

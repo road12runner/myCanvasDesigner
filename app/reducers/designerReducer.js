@@ -1,13 +1,25 @@
-const INITIAL_STATE ={};
+const INITIAL_STATE ={ imageCategories: {}, selectedCategory: null, selectedImage: null};
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case 'APP_DATA':
       console.log(action.payload);
-      const {DesignTemplate} = action.payload;
-
+      const {DesignTemplate, Galleries} = action.payload;
       return {...state, app: action.payload, template: DesignTemplate};
+    case 'GALLERY_DATA':
+      return {...state , gallery: action.payload};
+    case 'SELECTED_CATEGORY':
+      return {...state, selectedCategory: action.payload};
+    case 'SELECTED_IMAGE':
+      return {...state, selectedImage: action.payload};
+    case 'IMAGE_CATEGORY_DATA':
+      console.log('payload', action.payload);
+      const category = action.payload;
+      let imageCategories = {...state.imageCategories};
+      imageCategories[category.Id] = category;
+      return {...state , imageCategories};
     default:
       return state;
   }
+
 }

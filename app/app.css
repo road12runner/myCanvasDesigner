@@ -12,3 +12,9 @@ body {
     height: 500px;
     border: 1px dotted lightcyan;
 }
+
+.gallery-image {
+    width: 100px;
+    height: 60px;
+    margin: 4px;
+}
