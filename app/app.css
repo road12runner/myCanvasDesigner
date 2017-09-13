@@ -18,3 +18,7 @@ body {
     height: 60px;
     margin: 4px;
 }
+
+.cardcoverage-message {
+    color: red
+}

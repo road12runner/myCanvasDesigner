@@ -48,6 +48,14 @@ export const selectCategory = (catId) => {
 };
 
 
-export const selectImage = (imgId) => {
-  return {type: 'SELECTED_IMAGE', payload: imgId};
+export const selectImage = (imgId, url) => {
+  return {type: 'SELECTED_IMAGE', payload: {imgId, url}};
+};
+
+export const  getLogo = () => {
+  return (dispatch) => {
+    return axios.get('http://localhost:9999/API/designers/1b283d18-c2bf-4ba4-990a-63d5959f2750/Images/person.jpg').then( (response) =>  {
+      dispatch({type: 'LOGO_DATA', payload: response.data});
+    });
+  }
 };

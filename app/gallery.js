@@ -46,7 +46,7 @@ class Gallery extends  Component {
   }
 
   handleSelectImage(img) {
-    this.props.selectImage(img.id);
+    this.props.selectImage(img.id, img.url);
   }
   render() {
     const categories = this.props.gallery;

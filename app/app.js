@@ -10,10 +10,17 @@ class App extends Component {
   }
   render() {
     return(
-      <div>
-        <h1>Main App</h1>
+      <div className="container">
+        <h3>Canvas Designer</h3>
         <Header/>
         <Designer/>
+          Used libraries:
+          <ul className="list-group">
+            <li className="list-group-item">React.js</li>
+            <li className="list-group-item">Fabric.js</li>
+            <li className="list-group-item">Lodash.js</li>
+            <li className="list-group-item">Bootstrap</li>
+          </ul>
       </div>
     )
   }
