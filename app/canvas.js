@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-
+import {submitImage} from './actions'
 import Filters from'./filters';
-const PERSON_URL ='http://localhost:9999/API/designers/1b283d18-c2bf-4ba4-990a-63d5959f2750/Images/person.jpg';
+const PERSON_URL ='http://localhost:9999/API/designers/1b283d18-c2bf-4ba4-990a-63d5959f2750/Images/person.png';
 
 class Canvas extends  Component {
   constructor() {
     super();
     this.onAddText = this.onAddText.bind(this);
     this.onAddLogo = this.onAddLogo.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
     this.state = {currentBackgroundImage : 0}
   }
 
@@ -78,6 +79,8 @@ class Canvas extends  Component {
   loadTemplate(url) {
     const canvas = this.canvas;
 
+    const templateImage = new fabric.Image();
+    templateImage.crossOrigin = 'anonymous';
     fabric.Image.fromURL(url,  function(oImg) {
       oImg.scaleToHeight(153);
       oImg.scaleToWidth(261);
@@ -86,15 +89,15 @@ class Canvas extends  Component {
         top:  100,
         fill: 'rgba(0,0,0,0)',
         stroke:'red',
-        strokeWidth:10
+        strokeWidth:10,
         //clipTo: roundedCorners.bind(oImg),
         // clipTo: function (ctx) {
         //   ctx.arc(0, 0, 300, 0, Math.PI * 2, true);
         // }
       });
-      canvas.add(oImg).setActiveObject(oImg);
+      //oImg.setAttribute('crossOrigin', 'anonymous');
 
-
+      canvas.add(oImg);
       oImg.animate('left', 100, {
         duration: 1000,
         onChange: canvas.renderAll.bind(canvas),
@@ -108,7 +111,7 @@ class Canvas extends  Component {
         }
       });
 
-    });
+    }, {crossOrigin :'anonymous'});
   }
 
   loadBackgroundImage(url) {
@@ -134,7 +137,7 @@ class Canvas extends  Component {
         easing: fabric.util.ease['easeOutBack']
       });
 
-    });
+    }, {crossOrigin :'anonymous'});
 
   }
 
@@ -190,7 +193,40 @@ class Canvas extends  Component {
         easing: fabric.util.ease['easeOutBack']
       });
 
+    },{crossOrigin :'anonymous'});
+
+  }
+
+
+  onSubmit() {
+    const canvas = this.canvas;
+
+    // remove template
+    const template = canvas._objects[0];
+
+    //canvas.remove(template);
+
+    const dataURL = this.canvas.toDataURL({
+      format: 'png',
+      left: 100,
+      top: 100,
+      width: 261,
+      height:153,
+      multiplier: 0.5
     });
+    this.props.submitImage(dataURL);
+    // var imgId = new Date().getTime();
+    // $.ajax('http://localhost:9999/pcs/api/v1/designers/submit/' + imgId, {
+    //   method: 'POST',
+    //   data: {img:  dataURL},
+    //   success: function(){
+    //     console.log('success');
+    //   },
+    //   error: function() {
+    //     console.log('error');
+    //   }
+    // });
+
 
   }
 
@@ -207,6 +243,7 @@ class Canvas extends  Component {
             </div>
             <div className="form-group">
               <button className="btn bnt-primary" onClick={this.onAddLogo}>Add Logo</button>
+              <button className="btn bnt-primary" onClick={this.onSubmit}>Submit</button>
             </div>
           </div>
         </div>
@@ -497,4 +534,4 @@ function filters() {
   })();
 }
 
-export default connect(mapStateToProps)(Canvas);
+export default connect(mapStateToProps, {submitImage})(Canvas);

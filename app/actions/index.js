@@ -52,10 +52,28 @@ export const selectImage = (imgId, url) => {
   return {type: 'SELECTED_IMAGE', payload: {imgId, url}};
 };
 
-export const  getLogo = () => {
+export const updateFilter = (filterId, value) => {
+  return {type: 'UPDATE_FILTER', payload: {filterId, value}}
+};
+
+export const submitImage = (data) => {
+  const url = 'http://localhost:9999/pcs/api/v1/designers/submit/' + new Date().getTime();
   return (dispatch) => {
-    return axios.get('http://localhost:9999/API/designers/1b283d18-c2bf-4ba4-990a-63d5959f2750/Images/person.jpg').then( (response) =>  {
-      dispatch({type: 'LOGO_DATA', payload: response.data});
+    return axios.post(url, {img: data}).then( (response) =>  {
+      console.log('submit image', response);
+      dispatch({type: 'SUBMIT_IMAGE'});
     });
-  }
+  };
+  // var imgId = new Date().getTime();
+  // $.ajax('http://localhost:9999/pcs/api/v1/designers/submit/' + imgId, {
+  //   method: 'POST',
+  //   data: {img:  dataURL},
+  //   success: function(){
+  //     console.log('success');
+  //   },
+  //   error: function() {
+  //     console.log('error');
+  //   }
+  // });
+
 };
