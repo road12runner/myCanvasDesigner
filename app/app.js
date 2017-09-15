@@ -11,7 +11,7 @@ class App extends Component {
   render() {
     return(
       <div className="container">
-        <h3>Canvas Designer</h3>
+        <h3>iCanvas</h3>
         <Header/>
         <Designer/>
           Used libraries:

@@ -22,7 +22,6 @@ class Canvas extends  Component {
     const checkImages = (img1, img2) => {
       const coords1 =  getCoordinates(img1);
       const coords2 =  getCoordinates(img2);
-      //isInside(coords1, coords2) ? $('#coverage-message').hide() : $('#coverage-message').show();
       that.setState({showCoverageMessage: !isInside(coords1, coords2)})
     };
 
@@ -69,18 +68,12 @@ class Canvas extends  Component {
       this.setState({currentBackgroundImage: nextProps.selectedImage.imgId});
 
     }
-
-    //console.log('componentWillReceiveProps', nextProps, this.props.template);
   }
 
-  renderTemplate() {
-
-  }
   loadTemplate(url) {
     const canvas = this.canvas;
-
+    console.log('loading templte', url);
     const templateImage = new fabric.Image();
-    templateImage.crossOrigin = 'anonymous';
     fabric.Image.fromURL(url,  function(oImg) {
       oImg.scaleToHeight(153);
       oImg.scaleToWidth(261);
@@ -95,19 +88,17 @@ class Canvas extends  Component {
         //   ctx.arc(0, 0, 300, 0, Math.PI * 2, true);
         // }
       });
-      //oImg.setAttribute('crossOrigin', 'anonymous');
-
       canvas.add(oImg);
       oImg.animate('left', 100, {
         duration: 1000,
         onChange: canvas.renderAll.bind(canvas),
         easing: fabric.util.ease['easeOutBack'],
         onComplete: () => {
-          oImg.hasBorders = false;
-          oImg.hasControls = false;
-          oImg.set('selectable', false);
-          oImg.lockMovementX = true;
-          oImg.lockMovementY = true;
+          // oImg.hasBorders = false;
+          // oImg.hasControls = false;
+          // oImg.set('selectable', false);
+          // oImg.lockMovementX = true;
+          // oImg.lockMovementY = true;
         }
       });
 
@@ -204,8 +195,6 @@ class Canvas extends  Component {
     // remove template
     const template = canvas._objects[0];
 
-    //canvas.remove(template);
-
     const dataURL = this.canvas.toDataURL({
       format: 'png',
       left: 100,
@@ -215,23 +204,237 @@ class Canvas extends  Component {
       multiplier: 0.5
     });
     this.props.submitImage(dataURL);
-    // var imgId = new Date().getTime();
-    // $.ajax('http://localhost:9999/pcs/api/v1/designers/submit/' + imgId, {
-    //   method: 'POST',
-    //   data: {img:  dataURL},
-    //   success: function(){
-    //     console.log('success');
-    //   },
-    //   error: function() {
-    //     console.log('error');
-    //   }
-    // });
+  }
 
+  renderFilters(filters) {
+    console.log('render filters', filters);
+
+    // var webglBackend = new fabric.WebglFilterBackend();
+    // var canvas2dBackend = new fabric.Canvas2dFilterBackend();
+    // const webglBackend = new fabric.WebglFilterBackend();
+    // const canvas2dBackend = new fabric.Canvas2dFilterBackend();
+    const f = fabric.Image.filters;
+
+    let indexF;
+
+    // if (filters.webgl) {
+    //   fabric.filterBackend = webglBackend;
+    // } else {
+    //   fabric.filterBackend = canvas2dBackend;
+    // }
+
+    this.applyFilter(4, filters.brownie && new f.Brownie());
+
+    // $('brownie').onclick = function() {
+    //   applyFilter(4, this.checked && new f.Brownie());
+    // };
+    // $('vintage').onclick = function() {
+    //   applyFilter(9, this.checked && new f.Vintage());
+    // };
+    // $('technicolor').onclick = function() {
+    //   applyFilter(14, this.checked && new f.Technicolor());
+    // };
+    // $('polaroid').onclick = function() {
+    //   applyFilter(15, this.checked && new f.Polaroid());
+    // };
+    // $('kodachrome').onclick = function() {
+    //   applyFilter(18, this.checked && new f.Kodachrome());
+    // };
+    // $('blackwhite').onclick = function() {
+    //   applyFilter(19, this.checked && new f.BlackWhite());
+    // };
+    // $('grayscale').onclick = function() {
+    //   applyFilter(0, this.checked && new f.Grayscale());
+    // };
+    // $('average').onclick = function() {
+    //   applyFilterValue(0, 'mode', 'average');
+    // };
+    // $('luminosity').onclick = function() {
+    //   applyFilterValue(0, 'mode', 'luminosity');
+    // };
+    // $('lightness').onclick = function() {
+    //   applyFilterValue(0, 'mode', 'lightness');
+    // };
+    // $('invert').onclick = function() {
+    //   applyFilter(1, this.checked && new f.Invert());
+    // };
+    // $('remove-color').onclick = function () {
+    //   applyFilter(2, this.checked && new f.RemoveColor({
+    //       distance: $('remove-color-distance').value,
+    //       color: $('remove-color-color').value,
+    //     }));
+    // };
+    // $('remove-color-color').onchange = function() {
+    //   applyFilterValue(2, 'color', this.value);
+    // };
+    // $('remove-color-distance').oninput = function() {
+    //   applyFilterValue(2, 'distance', this.value);
+    // };
+    // $('sepia').onclick = function() {
+    //   applyFilter(3, this.checked && new f.Sepia());
+    // };
+    // $('brightness').onclick = function () {
+    //   applyFilter(5, this.checked && new f.Brightness({
+    //       brightness: parseFloat($('brightness-value').value)
+    //     }));
+    // };
+    // $('brightness-value').oninput = function() {
+    //   applyFilterValue(5, 'brightness', parseFloat(this.value));
+    // };
+    // $('gamma').onclick = function () {
+    //   var v1 = parseFloat($('gamma-red').value);
+    //   var v2 = parseFloat($('gamma-green').value);
+    //   var v3 = parseFloat($('gamma-blue').value);
+    //   applyFilter(17, this.checked && new f.Gamma({
+    //       gamma: [v1, v2, v3]
+    //     }));
+    // };
+    // $('gamma-red').oninput = function() {
+    //   var current = getFilter(17).gamma;
+    //   current[0] = parseFloat(this.value);
+    //   applyFilterValue(17, 'gamma', current);
+    // };
+    // $('gamma-green').oninput = function() {
+    //   var current = getFilter(17).gamma;
+    //   current[1] = parseFloat(this.value);
+    //   applyFilterValue(17, 'gamma', current);
+    // };
+    // $('gamma-blue').oninput = function() {
+    //   var current = getFilter(17).gamma;
+    //   current[2] = parseFloat(this.value);
+    //   applyFilterValue(17, 'gamma', current);
+    // };
+    // $('contrast').onclick = function () {
+    //   applyFilter(6, this.checked && new f.Contrast({
+    //       contrast: parseFloat($('contrast-value').value)
+    //     }));
+    // };
+    // $('contrast-value').oninput = function() {
+    //   applyFilterValue(6, 'contrast', parseFloat(this.value));
+    // };
+    // $('saturation').onclick = function () {
+    //   applyFilter(7, this.checked && new f.Saturation({
+    //       saturation: parseFloat($('saturation-value').value)
+    //     }));
+    // };
+    // $('saturation-value').oninput = function() {
+    //   applyFilterValue(7, 'saturation', parseFloat(this.value));
+    // };
+    // $('noise').onclick = function () {
+    //   applyFilter(8, this.checked && new f.Noise({
+    //       noise: parseInt($('noise-value').value, 10)
+    //     }));
+    // };
+    // $('noise-value').oninput = function() {
+    //   applyFilterValue(8, 'noise', parseInt(this.value, 10));
+    // };
+    // $('pixelate').onclick = function() {
+    //   applyFilter(10, this.checked && new f.Pixelate({
+    //       blocksize: parseInt($('pixelate-value').value, 10)
+    //     }));
+    // };
+    // $('pixelate-value').oninput = function() {
+    //   applyFilterValue(10, 'blocksize', parseInt(this.value, 10));
+    // };
+    // $('blur').onclick = function() {
+    //   applyFilter(11, this.checked && new f.Blur({
+    //       value: parseFloat($('blur-value').value)
+    //     }));
+    // };
+    // $('blur-value').oninput = function() {
+    //   applyFilterValue(11, 'blur', parseFloat(this.value, 10));
+    // };
+    // $('sharpen').onclick = function() {
+    //   applyFilter(12, this.checked && new f.Convolute({
+    //       matrix: [  0, -1,  0,
+    //         -1,  5, -1,
+    //         0, -1,  0 ]
+    //     }));
+    // };
+    // $('emboss').onclick = function() {
+    //   applyFilter(13, this.checked && new f.Convolute({
+    //       matrix: [ 1,   1,  1,
+    //         1, 0.7, -1,
+    //         -1,  -1, -1 ]
+    //     }));
+    // };
+    // $('blend').onclick= function() {
+    //   applyFilter(16, this.checked && new f.BlendColor({
+    //       color: document.getElementById('blend-color').value,
+    //       mode: document.getElementById('blend-mode').value,
+    //       alpha: document.getElementById('blend-alpha').value
+    //     }));
+    // };
+    //
+    // $('blend-mode').onchange = function() {
+    //   applyFilterValue(16, 'mode', this.value);
+    // };
+    //
+    // $('blend-color').onchange = function() {
+    //   applyFilterValue(16, 'color', this.value);
+    // };
+    //
+    // $('blend-alpha').oninput = function() {
+    //   applyFilterValue(16, 'alpha', this.value);
+    // };
+    //
+    // $('hue').onclick= function() {
+    //   applyFilter(21, this.checked && new f.HueRotation({
+    //       rotation: document.getElementById('hue-value').value,
+    //     }));
+    // };
+    //
+    // $('hue-value').oninput = function() {
+    //   applyFilterValue(21, 'rotation', this.value);
+    // };
+    //
+    // $('blend-image').onclick= function() {
+    //   applyFilter(20, this.checked && new f.BlendImage({
+    //       image: fImage,
+    //     }));
+    // };
+    //
+    // $('blend-image-mode').onchange = function() {
+    //   applyFilterValue(20, 'mode', this.value);
+    // };
+    // var imageElement = document.createElement('img');
+    // imageElement.src = '../assets/printio.png';
+    // var fImage = new fabric.Image(imageElement);
+    // fImage.scaleX = 1;
+    // fImage.scaleY = 1;
+    // fImage.top = 15;
+    // fImage.left = 15;
+    //
 
   }
 
+  applyFilter(index, filter) {
+    if (this.canvas && this.canvas._objects.length > 1) {
+      const obj = this.canvas._objects[0];
+      obj.filters[index] = filter;
+      obj.applyFilters();
+      this.canvas.renderAll();
+    }
+  }
+
+
+  applyFilterValue(index, prop, value) {
+    if (this.canvas && this.canvas._objects.length > 1) {
+      const obj = this.canvas._objects[0];
+      if (obj.filters[index]) {
+        obj.filters[index][prop] = value;
+        obj.applyFilters();
+        this.canvas.renderAll();
+    }
+  }
+}
+
+
   render() {
     const selectedImage = this.props.selectedImage;
+
+    //this.renderFilters(this.props.filters);
+
     return(
     <div>
       <div className="row">
@@ -274,7 +477,8 @@ class Canvas extends  Component {
 
 const mapStateToProps = (state) => {
   const {template, selectedImage} = state.designer;
- return {template, selectedImage};
+  const filters = state.filters;
+ return {template, selectedImage, filters};
 };
 
 const getCoordinates = (img) => {
@@ -304,234 +508,10 @@ const isInside = (inner, outer) => {
 
 
 
-function filters() {
-  (function() {
-    // manually initialize 2 filter backend to give ability to switch:
-    var webglBackend = new fabric.WebglFilterBackend();
-    var canvas2dBackend = new fabric.Canvas2dFilterBackend();
-
-    fabric.filterBackend = webglBackend;
-    fabric.Object.prototype.transparentCorners = false;
-
-    function applyFilter(index, filter) {
-      const obj = canvas.getActiveObject();
-      obj.filters[index] = filter;
-      obj.applyFilters();
-      const dimString = canvas.getActiveObject().width + ' x ' +
-        canvas.getActiveObject().height;
-      canvas.renderAll();
-    }
-
-    function getFilter(index) {
-      const obj = canvas.getActiveObject();
-      return obj.filters[index];
-    }
-
-    function applyFilterValue(index, prop, value) {
-      const obj = canvas.getActiveObject();
-      if (obj.filters[index]) {
-        obj.filters[index][prop] = value;
-        obj.applyFilters();
-        canvas.renderAll();
-      }
-    }
-
-    fabric.Object.prototype.padding = 5;
-    fabric.Object.prototype.transparentCorners = false;
-
-    var canvas = this.__canvas = new fabric.Canvas('c'),
-      f = fabric.Image.filters;
-
-
-
-    var indexF;
-    $('webgl').onclick = function() {
-      if (this.checked) {
-        fabric.filterBackend = webglBackend;
-      } else {
-        fabric.filterBackend = canvas2dBackend;
-      }
-    };
-    $('brownie').onclick = function() {
-      applyFilter(4, this.checked && new f.Brownie());
-    };
-    $('vintage').onclick = function() {
-      applyFilter(9, this.checked && new f.Vintage());
-    };
-    $('technicolor').onclick = function() {
-      applyFilter(14, this.checked && new f.Technicolor());
-    };
-    $('polaroid').onclick = function() {
-      applyFilter(15, this.checked && new f.Polaroid());
-    };
-    $('kodachrome').onclick = function() {
-      applyFilter(18, this.checked && new f.Kodachrome());
-    };
-    $('blackwhite').onclick = function() {
-      applyFilter(19, this.checked && new f.BlackWhite());
-    };
-    $('grayscale').onclick = function() {
-      applyFilter(0, this.checked && new f.Grayscale());
-    };
-    $('average').onclick = function() {
-      applyFilterValue(0, 'mode', 'average');
-    };
-    $('luminosity').onclick = function() {
-      applyFilterValue(0, 'mode', 'luminosity');
-    };
-    $('lightness').onclick = function() {
-      applyFilterValue(0, 'mode', 'lightness');
-    };
-    $('invert').onclick = function() {
-      applyFilter(1, this.checked && new f.Invert());
-    };
-    $('remove-color').onclick = function () {
-      applyFilter(2, this.checked && new f.RemoveColor({
-          distance: $('remove-color-distance').value,
-          color: $('remove-color-color').value,
-        }));
-    };
-    $('remove-color-color').onchange = function() {
-      applyFilterValue(2, 'color', this.value);
-    };
-    $('remove-color-distance').oninput = function() {
-      applyFilterValue(2, 'distance', this.value);
-    };
-    $('sepia').onclick = function() {
-      applyFilter(3, this.checked && new f.Sepia());
-    };
-    $('brightness').onclick = function () {
-      applyFilter(5, this.checked && new f.Brightness({
-          brightness: parseFloat($('brightness-value').value)
-        }));
-    };
-    $('brightness-value').oninput = function() {
-      applyFilterValue(5, 'brightness', parseFloat(this.value));
-    };
-    $('gamma').onclick = function () {
-      var v1 = parseFloat($('gamma-red').value);
-      var v2 = parseFloat($('gamma-green').value);
-      var v3 = parseFloat($('gamma-blue').value);
-      applyFilter(17, this.checked && new f.Gamma({
-          gamma: [v1, v2, v3]
-        }));
-    };
-    $('gamma-red').oninput = function() {
-      var current = getFilter(17).gamma;
-      current[0] = parseFloat(this.value);
-      applyFilterValue(17, 'gamma', current);
-    };
-    $('gamma-green').oninput = function() {
-      var current = getFilter(17).gamma;
-      current[1] = parseFloat(this.value);
-      applyFilterValue(17, 'gamma', current);
-    };
-    $('gamma-blue').oninput = function() {
-      var current = getFilter(17).gamma;
-      current[2] = parseFloat(this.value);
-      applyFilterValue(17, 'gamma', current);
-    };
-    $('contrast').onclick = function () {
-      applyFilter(6, this.checked && new f.Contrast({
-          contrast: parseFloat($('contrast-value').value)
-        }));
-    };
-    $('contrast-value').oninput = function() {
-      applyFilterValue(6, 'contrast', parseFloat(this.value));
-    };
-    $('saturation').onclick = function () {
-      applyFilter(7, this.checked && new f.Saturation({
-          saturation: parseFloat($('saturation-value').value)
-        }));
-    };
-    $('saturation-value').oninput = function() {
-      applyFilterValue(7, 'saturation', parseFloat(this.value));
-    };
-    $('noise').onclick = function () {
-      applyFilter(8, this.checked && new f.Noise({
-          noise: parseInt($('noise-value').value, 10)
-        }));
-    };
-    $('noise-value').oninput = function() {
-      applyFilterValue(8, 'noise', parseInt(this.value, 10));
-    };
-    $('pixelate').onclick = function() {
-      applyFilter(10, this.checked && new f.Pixelate({
-          blocksize: parseInt($('pixelate-value').value, 10)
-        }));
-    };
-    $('pixelate-value').oninput = function() {
-      applyFilterValue(10, 'blocksize', parseInt(this.value, 10));
-    };
-    $('blur').onclick = function() {
-      applyFilter(11, this.checked && new f.Blur({
-          value: parseFloat($('blur-value').value)
-        }));
-    };
-    $('blur-value').oninput = function() {
-      applyFilterValue(11, 'blur', parseFloat(this.value, 10));
-    };
-    $('sharpen').onclick = function() {
-      applyFilter(12, this.checked && new f.Convolute({
-          matrix: [  0, -1,  0,
-            -1,  5, -1,
-            0, -1,  0 ]
-        }));
-    };
-    $('emboss').onclick = function() {
-      applyFilter(13, this.checked && new f.Convolute({
-          matrix: [ 1,   1,  1,
-            1, 0.7, -1,
-            -1,  -1, -1 ]
-        }));
-    };
-    $('blend').onclick= function() {
-      applyFilter(16, this.checked && new f.BlendColor({
-          color: document.getElementById('blend-color').value,
-          mode: document.getElementById('blend-mode').value,
-          alpha: document.getElementById('blend-alpha').value
-        }));
-    };
-
-    $('blend-mode').onchange = function() {
-      applyFilterValue(16, 'mode', this.value);
-    };
-
-    $('blend-color').onchange = function() {
-      applyFilterValue(16, 'color', this.value);
-    };
-
-    $('blend-alpha').oninput = function() {
-      applyFilterValue(16, 'alpha', this.value);
-    };
-
-    $('hue').onclick= function() {
-      applyFilter(21, this.checked && new f.HueRotation({
-          rotation: document.getElementById('hue-value').value,
-        }));
-    };
-
-    $('hue-value').oninput = function() {
-      applyFilterValue(21, 'rotation', this.value);
-    };
-
-    $('blend-image').onclick= function() {
-      applyFilter(20, this.checked && new f.BlendImage({
-          image: fImage,
-        }));
-    };
-
-    $('blend-image-mode').onchange = function() {
-      applyFilterValue(20, 'mode', this.value);
-    };
-    var imageElement = document.createElement('img');
-    imageElement.src = '../assets/printio.png';
-    var fImage = new fabric.Image(imageElement);
-    fImage.scaleX = 1;
-    fImage.scaleY = 1;
-    fImage.top = 15;
-    fImage.left = 15;
-  })();
-}
+// function filters() {
+//   (function() {
+//     // manually initialize 2 filter backend to give ability to switch:
+//   })();
+// }
 
 export default connect(mapStateToProps, {submitImage})(Canvas);

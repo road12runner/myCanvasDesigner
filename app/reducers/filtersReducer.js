@@ -41,18 +41,18 @@ const INITIAL_STATE ={
   invert: false,
   removeColor: false,
   removeColorDistance: '0.2',
-  removeColorColor: '',
+  removeColorColor: '#00f900',
   sepia: false,
-  brightness: false, brightnessValue: '',
-  gamma: false, gammaRed: '', gammaGreen: '', gammaBlue: '',
-  contrast: false, contractVvalue: '',
-  saturation: false, saturationValue: '',
-  noise: false, noiseValue:'',
-  blur: false, bluerValue: '',
-  pixelate: false, pixelateValue: '',
+  brightness: false, brightnessValue: '0.1',
+  gamma: false, gammaRed: '1', gammaGreen: '1', gammaBlue: '1',
+  contrast: false, contractValue: '0',
+  saturation: false, saturationValue: '0',
+  noise: false, noiseValue:'100',
+  blur: false, bluerValue: '0.1',
+  pixelate: false, pixelateValue: '4',
   emboss: false,
-  blend: false, blendColor: '', blendMode: '', blendAlpha:'',
-  hue: false, hueValue: ''
+  blend: false, blendColor: '#00f900', blendMode: 'add', blendAlpha:'1',
+  hue: false, hueValue: '0'
 };
 
 export default (state = INITIAL_STATE, action) => {

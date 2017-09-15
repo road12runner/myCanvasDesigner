@@ -63,55 +63,55 @@ class Filters extends  Component {
           <label><span>Polaroid:</span> <input type="checkbox" id="polaroid" checked={filters.polaroid} onChange={this.handleInputChange}/></label>
         </p>
         <p>
-          <label><span>Remove color:</span> <input type="checkbox" id="remove-color"/></label><br/>
-          <label>Color: <input type="color" id="remove-color-color" value="#00f900"/></label><br/>
+          <label><span>Remove color:</span> <input type="checkbox" id="removeColor" checked={filters.removeColor} onChange={this.handleInputChange}/></label><br/>
+          <label>Color: <input type="color" id="removeColorColor"  value={filters.removeColorColor} onChange={this.handleInputChange}/></label><br/>
           <br/>
           <label>Distance: <input type="range" id="removeColorDistance"  min="0" max="1" step="0.01"  value={filters.removeColorDistance} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Brightness:</span> <input type="checkbox" id="brightness" checked={filters.brightness} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Value: <input type="range" id="brightness-value" value="0.1" min="-1" max="1" step="0.003921"/></label>
+          <label>Value: <input type="range" id="brightnessValue"  min="-1" max="1" step="0.003921" value={filters.brightnessValue} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Gamma:</span> <input type="checkbox" id="gamma" checked={filters.gamma} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Red: <input type="range" id="gamma-red" value="1" min="0.2" max="2.2" step="0.003921"/></label>
+          <label>Red: <input type="range" id="gammaRed"  min="0.2" max="2.2" step="0.003921" value={filters.gammaRed} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Green: <input type="range" id="gamma-green" value="1" min="0.2" max="2.2" step="0.003921"/></label>
+          <label>Green: <input type="range" id="gammaGreen"  min="0.2" max="2.2" step="0.003921" value={filters.gammaGreen} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Blue: <input type="range" id="gamma-blue" value="1" min="0.2" max="2.2" step="0.003921"/></label>
+          <label>Blue: <input type="range" id="gammaBlue" min="0.2" max="2.2" step="0.003921" value={filters.gammaBlue} onChange={this.handleInputChange}/></label>
 
         </p>
         <p>
           <label><span>Contrast:</span> <input type="checkbox" id="contrast" checked={filters.contrast} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Value: <input type="range" id="contrast-value" value="0" min="-1" max="1" step="0.003921"/></label>
+          <label>Value: <input type="range" id="contrastValue"  min="-1" max="1" step="0.003921" value={filters.contrastValue} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Saturation:</span> <input type="checkbox" id="saturation" checked={filters.saturation} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Value: <input type="range" id="saturation-value" value="0" min="-1" max="1" step="0.003921"/></label>
+          <label>Value: <input type="range" id="saturationValue"  min="-1" max="1" step="0.003921" value={filters.saturationValue} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Hue:</span> <input type="checkbox" id="hue" checked={filters.hue} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Value: <input type="range" id="hue-value" value="0" min="-2" max="2" step="0.002"/></label>
+          <label>Value: <input type="range" id="hueValue"  min="-2" max="2" step="0.002" value={filters.hueValue} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Noise:</span> <input type="checkbox" id="noise" checked={filters.noise} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Value: <input type="range" id="noise-value" value="100" min="0" max="1000"/></label>
+          <label>Value: <input type="range" id="noiseValue" min="0" max="1000" value={filters.noiseValue} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Pixelate</span> <input type="checkbox" id="pixelate" checked={filters.pixelate} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Value: <input type="range" id="pixelate-value" value="4" min="2" max="20"/></label>
+          <label>Value: <input type="range" id="pixelateValue"  min="2" max="20"  value={filters.pixelateValue} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Blur:</span> <input type="checkbox" id="blur" checked={filters.blur} onChange={this.handleInputChange}/></label>
           <br/>
-          <label>Value: <input type="range" id="blur-value" value="0.1" min="0" max="1" step="0.01"/></label>
+          <label>Value: <input type="range" id="blurValue" min="0" max="1" step="0.01" value={filters.blurValue} onChange={this.handleInputChange}/></label>
         </p>
         <p>
           <label><span>Sharpen:</span> <input type="checkbox" id="sharpen" checked={filters.sharpen} onChange={this.handleInputChange}/></label>
@@ -123,8 +123,8 @@ class Filters extends  Component {
           <label><span>Blend Color:</span> <input type="checkbox" id="blend"  checked={filters.blend} onChange={this.handleInputChange}/></label>
           <br/>
           <label>Mode:</label>
-          <select id="blend-mode" name="blend-mode">
-            <option selected="" value="add">Add</option>
+          <select id="blendMode" name="blend-mode" value={filters.blendMode} onChange={this.handleInputChange}>
+            <option value="add">Add</option>
             <option value="diff">Diff</option>
             <option value="subtract">Subtract</option>
             <option value="multiply">Multiply</option>
@@ -136,8 +136,8 @@ class Filters extends  Component {
             <option value="tint">Tint</option>
           </select>
           <br/>
-          <label>Color: <input type="color" id="blend-color" value="#00f900"/></label><br/>
-          <label>Alpha: <input type="range" id="blend-alpha" min="0" max="1" value="1" step="0.01"/></label><br/>
+          <label>Color: <input type="color" id="blendColor" value={filters.blendColor} onChange={this.handleInputChange}/></label><br/>
+          <label>Alpha: <input type="range" id="blendAlpha" min="0" max="1"  step="0.01" value={filters.blendAlpha} onChange={this.handleInputChange}/></label><br/>
         </p>
       </div>
     );
