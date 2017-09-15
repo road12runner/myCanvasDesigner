@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+
+export const nextStep = (step) => {
+  return {type: 'NEXT_STEP'};
+};
+
+export const previousStep = (step) => {
+  return {type: 'PREVIOUS_STEP'};
+};
+
+
 const getApp = () => {
   return (dispatch) => {
     return axios.get('http://localhost:9999/pcs/api/v1/designers/1b283d18-c2bf-4ba4-990a-63d5959f2750').then( (response) =>  {
@@ -56,24 +66,12 @@ export const updateFilter = (filterId, value) => {
   return {type: 'UPDATE_FILTER', payload: {filterId, value}}
 };
 
-export const submitImage = (data) => {
+export const submitImage = (data, dataWithTemplate) => {
   const url = 'http://localhost:9999/pcs/api/v1/designers/submit/' + new Date().getTime();
   return (dispatch) => {
-    return axios.post(url, {img: data}).then( (response) =>  {
+    return axios.post(url, {img: data, imgWithTemplate: dataWithTemplate}).then( (response) =>  {
       console.log('submit image', response);
       dispatch({type: 'SUBMIT_IMAGE'});
     });
   };
-  // var imgId = new Date().getTime();
-  // $.ajax('http://localhost:9999/pcs/api/v1/designers/submit/' + imgId, {
-  //   method: 'POST',
-  //   data: {img:  dataURL},
-  //   success: function(){
-  //     console.log('success');
-  //   },
-  //   error: function() {
-  //     console.log('error');
-  //   }
-  // });
-
 };

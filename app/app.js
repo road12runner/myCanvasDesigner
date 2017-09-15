@@ -14,13 +14,9 @@ class App extends Component {
         <h3>iCanvas</h3>
         <Header/>
         <Designer/>
-          Used libraries:
-          <ul className="list-group">
-            <li className="list-group-item">React.js</li>
-            <li className="list-group-item">Fabric.js</li>
-            <li className="list-group-item">Lodash.js</li>
-            <li className="list-group-item">Bootstrap</li>
-          </ul>
+        <p>
+          Used libraries: <span className="small-text">React.js, Fabric.js, Lodash.js, Bootstrap</span>
+        </p>
       </div>
     )
   }

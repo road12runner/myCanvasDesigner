@@ -1,4 +1,4 @@
-const INITIAL_STATE ={ imageCategories: {}, selectedCategory: null, selectedImage: null};
+const INITIAL_STATE ={ imageCategories: {}, selectedCategory: null, selectedImage: null, currentStep: 0};
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -18,6 +18,10 @@ export default (state = INITIAL_STATE, action) => {
       let imageCategories = {...state.imageCategories};
       imageCategories[category.Id] = category;
       return {...state , imageCategories};
+    case 'NEXT_STEP':
+      return {...state, currentStep: state.currentStep +1 };
+    case 'PREVIOUS_STEP':
+        return {...state, currentStep: state.currentStep - 1 };
     default:
       return state;
   }

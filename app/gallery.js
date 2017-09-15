@@ -54,9 +54,9 @@ class Gallery extends  Component {
     return(
       <div>
         <h1>Gallery</h1>
-        <div>
-          {this.renderCategories(categories)}
-        </div>
+        {/*<div>*/}
+          {/*{this.renderCategories(categories)}*/}
+        {/*</div>*/}
         <div>
           {this.renderImages()}
         </div>

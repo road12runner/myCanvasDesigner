@@ -1,6 +1,7 @@
 body {
-    background-color: lightgray;
+    background-color: #fff;
 }
+
 
 .my-title {
     font-size: 32px;
@@ -22,3 +23,38 @@ body {
 .cardcoverage-message {
     color: red
 }
+
+.buttons-box {
+
+    display: flex;
+    flex-direction: row;
+
+
+    button {
+        height: 37px;
+        margin: 5px 10px;
+    }
+    input {
+        width: 130px;
+    }
+}
+
+.border-box {
+    border: 1px dotted lightcoral;
+}
+
+.inline-box {
+    display: inline-block;
+    margin: 5px 10px;
+    padding: 4px;
+}
+
+.btn-right {
+    float: right;
+    margin: 5px 10px;
+}
+
+.small-text {
+    font-size: 12px;
+}
+

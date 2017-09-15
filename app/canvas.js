@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {submitImage} from './actions'
+import {submitImage, nextStep, previousStep} from './actions'
 import Filters from'./filters';
+import Gallery from './gallery';
 const PERSON_URL ='http://localhost:9999/API/designers/1b283d18-c2bf-4ba4-990a-63d5959f2750/Images/person.png';
+
+const STATES = ['background', 'filters', 'text', 'logo', 'submit'];
 
 class Canvas extends  Component {
   constructor() {
@@ -14,6 +17,8 @@ class Canvas extends  Component {
   }
 
   componentDidMount() {
+
+
     this.canvas = new fabric.Canvas('aamjs-canvas', {width: 500, height: 350});
     this.canvas.preserveObjectStacking = true;
 
@@ -45,17 +50,14 @@ class Canvas extends  Component {
       }
     });
 
-
-
   }
 
   componentWillReceiveProps(nextProps){
-    // show template
+
     if (!this.props.template && nextProps.template) {
       this.loadTemplate(nextProps.template.UrlLarge)
     }
     if (nextProps.selectedImage && nextProps.selectedImage.imgId !== this.state.currentBackgroundImage) {
-      console.log('nextProps.selectedImage', nextProps.selectedImage);
       if (this.state.currentBackgroundImage) {
         // unload
         this.unLoadBackgroundImage(this.state.currentBackgroundImage).then(() => {
@@ -67,26 +69,34 @@ class Canvas extends  Component {
 
       this.setState({currentBackgroundImage: nextProps.selectedImage.imgId});
 
+
     }
+
+
+    if (nextProps.filters != this.props.filters && STATES[this.props.currentStep] === 'filters') {
+        this.renderFilters(this.props.filters);
+    }
+
   }
 
   loadTemplate(url) {
+    const that = this;
     const canvas = this.canvas;
-    console.log('loading templte', url);
     const templateImage = new fabric.Image();
     fabric.Image.fromURL(url,  function(oImg) {
       oImg.scaleToHeight(153);
       oImg.scaleToWidth(261);
       oImg.set({
-        left: -300,
+        left: -250,
         top:  100,
-        fill: 'rgba(0,0,0,0)',
-        stroke:'red',
-        strokeWidth:10,
+        // fill: 'rgba(0,0,0,0)',
+        // stroke:'red',
+        // strokeWidth:10,
         //clipTo: roundedCorners.bind(oImg),
         // clipTo: function (ctx) {
         //   ctx.arc(0, 0, 300, 0, Math.PI * 2, true);
         // }
+
       });
       canvas.add(oImg);
       oImg.animate('left', 100, {
@@ -94,20 +104,32 @@ class Canvas extends  Component {
         onChange: canvas.renderAll.bind(canvas),
         easing: fabric.util.ease['easeOutBack'],
         onComplete: () => {
-          // oImg.hasBorders = false;
-          // oImg.hasControls = false;
-          // oImg.set('selectable', false);
-          // oImg.lockMovementX = true;
-          // oImg.lockMovementY = true;
+          oImg.hasBorders = false;
+          oImg.hasControls = false;
+          oImg.set('selectable', false);
+          oImg.lockMovementX = true;
+          oImg.lockMovementY = true;
+
+          const rect = new fabric.Rect({
+            left: 100,
+            top: 100,
+            stroke: 'red',
+            fill: 'rgba(0,0,0,0)',
+            width: 261,
+            height: 153
+          });
+          canvas.add(rect);
         }
       });
 
-    }, {crossOrigin :'anonymous'});
+
+    },{crossOrigin :'anonymous'});
+
   }
 
   loadBackgroundImage(url) {
     const canvas = this.canvas;
-
+    const that = this;
     fabric.Image.fromURL(url,  function(oImg) {
       oImg.scaleToHeight(300);
       oImg.scaleToWidth(300);
@@ -125,7 +147,10 @@ class Canvas extends  Component {
       oImg.animate('left', 80, {
         duration: 1000,
         onChange: canvas.renderAll.bind(canvas),
-        easing: fabric.util.ease['easeOutBack']
+        easing: fabric.util.ease['easeOutBack'],
+        onComplete: () => {
+          that.props.nextStep();
+        }
       });
 
     }, {crossOrigin :'anonymous'});
@@ -134,7 +159,7 @@ class Canvas extends  Component {
 
   unLoadBackgroundImage(id) {
     const canvas = this.canvas;
-    var img = canvas._objects[0];
+    const img = canvas._objects[0];
     return new Promise( (resolve, reject) => {
 
       img.animate('left', -300, {
@@ -154,8 +179,8 @@ class Canvas extends  Component {
 
   onAddText(){
     const canvas = this.canvas;
-
-    const text = new fabric.Text(this.textInput.value, { left: 120, top: -320, fill: '#fff' });
+    const text1 = this.textInput.value;
+    const text = new fabric.Text( 'Hello', { left: 120, top: -320, fill: '#fff' });
     canvas.add(text);
 
     text.animate('top', 120, {
@@ -172,7 +197,7 @@ class Canvas extends  Component {
       oImg.scaleToHeight(50);
       oImg.scaleToWidth(50);
       oImg.set({
-        left: 580,
+        left: 380,
         top:  140,
       });
       canvas.add(oImg).setActiveObject(oImg);
@@ -192,8 +217,21 @@ class Canvas extends  Component {
   onSubmit() {
     const canvas = this.canvas;
 
-    // remove template
-    const template = canvas._objects[0];
+    // remove rectange
+    const rectangle = canvas._objects[2];
+    canvas.remove(rectangle);
+
+    const dataURLWithTemplate = this.canvas.toDataURL({
+      format: 'png',
+      left: 100,
+      top: 100,
+      width: 261,
+      height:153,
+      multiplier: 1
+    });
+
+    const template = canvas._objects[1];
+    canvas.remove(template);
 
     const dataURL = this.canvas.toDataURL({
       format: 'png',
@@ -201,269 +239,167 @@ class Canvas extends  Component {
       top: 100,
       width: 261,
       height:153,
-      multiplier: 0.5
+      multiplier: 1
     });
-    this.props.submitImage(dataURL);
+
+
+    this.props.submitImage(dataURL, dataURLWithTemplate);
   }
 
   renderFilters(filters) {
     console.log('render filters', filters);
 
-    // var webglBackend = new fabric.WebglFilterBackend();
-    // var canvas2dBackend = new fabric.Canvas2dFilterBackend();
-    // const webglBackend = new fabric.WebglFilterBackend();
-    // const canvas2dBackend = new fabric.Canvas2dFilterBackend();
+    const webglBackend = new fabric.WebglFilterBackend();
+    const canvas2dBackend = new fabric.Canvas2dFilterBackend();
     const f = fabric.Image.filters;
 
-    let indexF;
+    if (filters.webgl) {
+      fabric.filterBackend = webglBackend;
+    } else {
+      fabric.filterBackend = canvas2dBackend;
+    }
 
-    // if (filters.webgl) {
-    //   fabric.filterBackend = webglBackend;
-    // } else {
-    //   fabric.filterBackend = canvas2dBackend;
-    // }
+    const filterList= [];
 
-    this.applyFilter(4, filters.brownie && new f.Brownie());
 
-    // $('brownie').onclick = function() {
-    //   applyFilter(4, this.checked && new f.Brownie());
-    // };
-    // $('vintage').onclick = function() {
-    //   applyFilter(9, this.checked && new f.Vintage());
-    // };
-    // $('technicolor').onclick = function() {
-    //   applyFilter(14, this.checked && new f.Technicolor());
-    // };
-    // $('polaroid').onclick = function() {
-    //   applyFilter(15, this.checked && new f.Polaroid());
-    // };
-    // $('kodachrome').onclick = function() {
-    //   applyFilter(18, this.checked && new f.Kodachrome());
-    // };
-    // $('blackwhite').onclick = function() {
-    //   applyFilter(19, this.checked && new f.BlackWhite());
-    // };
-    // $('grayscale').onclick = function() {
-    //   applyFilter(0, this.checked && new f.Grayscale());
-    // };
-    // $('average').onclick = function() {
-    //   applyFilterValue(0, 'mode', 'average');
-    // };
-    // $('luminosity').onclick = function() {
-    //   applyFilterValue(0, 'mode', 'luminosity');
-    // };
-    // $('lightness').onclick = function() {
-    //   applyFilterValue(0, 'mode', 'lightness');
-    // };
-    // $('invert').onclick = function() {
-    //   applyFilter(1, this.checked && new f.Invert());
-    // };
-    // $('remove-color').onclick = function () {
-    //   applyFilter(2, this.checked && new f.RemoveColor({
-    //       distance: $('remove-color-distance').value,
-    //       color: $('remove-color-color').value,
-    //     }));
-    // };
-    // $('remove-color-color').onchange = function() {
-    //   applyFilterValue(2, 'color', this.value);
-    // };
-    // $('remove-color-distance').oninput = function() {
-    //   applyFilterValue(2, 'distance', this.value);
-    // };
-    // $('sepia').onclick = function() {
-    //   applyFilter(3, this.checked && new f.Sepia());
-    // };
-    // $('brightness').onclick = function () {
-    //   applyFilter(5, this.checked && new f.Brightness({
-    //       brightness: parseFloat($('brightness-value').value)
-    //     }));
-    // };
-    // $('brightness-value').oninput = function() {
-    //   applyFilterValue(5, 'brightness', parseFloat(this.value));
-    // };
-    // $('gamma').onclick = function () {
-    //   var v1 = parseFloat($('gamma-red').value);
-    //   var v2 = parseFloat($('gamma-green').value);
-    //   var v3 = parseFloat($('gamma-blue').value);
-    //   applyFilter(17, this.checked && new f.Gamma({
-    //       gamma: [v1, v2, v3]
-    //     }));
-    // };
-    // $('gamma-red').oninput = function() {
-    //   var current = getFilter(17).gamma;
-    //   current[0] = parseFloat(this.value);
-    //   applyFilterValue(17, 'gamma', current);
-    // };
-    // $('gamma-green').oninput = function() {
-    //   var current = getFilter(17).gamma;
-    //   current[1] = parseFloat(this.value);
-    //   applyFilterValue(17, 'gamma', current);
-    // };
-    // $('gamma-blue').oninput = function() {
-    //   var current = getFilter(17).gamma;
-    //   current[2] = parseFloat(this.value);
-    //   applyFilterValue(17, 'gamma', current);
-    // };
-    // $('contrast').onclick = function () {
-    //   applyFilter(6, this.checked && new f.Contrast({
-    //       contrast: parseFloat($('contrast-value').value)
-    //     }));
-    // };
-    // $('contrast-value').oninput = function() {
-    //   applyFilterValue(6, 'contrast', parseFloat(this.value));
-    // };
-    // $('saturation').onclick = function () {
-    //   applyFilter(7, this.checked && new f.Saturation({
-    //       saturation: parseFloat($('saturation-value').value)
-    //     }));
-    // };
-    // $('saturation-value').oninput = function() {
-    //   applyFilterValue(7, 'saturation', parseFloat(this.value));
-    // };
-    // $('noise').onclick = function () {
-    //   applyFilter(8, this.checked && new f.Noise({
-    //       noise: parseInt($('noise-value').value, 10)
-    //     }));
-    // };
-    // $('noise-value').oninput = function() {
-    //   applyFilterValue(8, 'noise', parseInt(this.value, 10));
-    // };
-    // $('pixelate').onclick = function() {
-    //   applyFilter(10, this.checked && new f.Pixelate({
-    //       blocksize: parseInt($('pixelate-value').value, 10)
-    //     }));
-    // };
-    // $('pixelate-value').oninput = function() {
-    //   applyFilterValue(10, 'blocksize', parseInt(this.value, 10));
-    // };
-    // $('blur').onclick = function() {
-    //   applyFilter(11, this.checked && new f.Blur({
-    //       value: parseFloat($('blur-value').value)
-    //     }));
-    // };
-    // $('blur-value').oninput = function() {
-    //   applyFilterValue(11, 'blur', parseFloat(this.value, 10));
-    // };
-    // $('sharpen').onclick = function() {
-    //   applyFilter(12, this.checked && new f.Convolute({
-    //       matrix: [  0, -1,  0,
-    //         -1,  5, -1,
-    //         0, -1,  0 ]
-    //     }));
-    // };
-    // $('emboss').onclick = function() {
-    //   applyFilter(13, this.checked && new f.Convolute({
-    //       matrix: [ 1,   1,  1,
-    //         1, 0.7, -1,
-    //         -1,  -1, -1 ]
-    //     }));
-    // };
-    // $('blend').onclick= function() {
-    //   applyFilter(16, this.checked && new f.BlendColor({
-    //       color: document.getElementById('blend-color').value,
-    //       mode: document.getElementById('blend-mode').value,
-    //       alpha: document.getElementById('blend-alpha').value
-    //     }));
-    // };
-    //
-    // $('blend-mode').onchange = function() {
-    //   applyFilterValue(16, 'mode', this.value);
-    // };
-    //
-    // $('blend-color').onchange = function() {
-    //   applyFilterValue(16, 'color', this.value);
-    // };
-    //
-    // $('blend-alpha').oninput = function() {
-    //   applyFilterValue(16, 'alpha', this.value);
-    // };
-    //
-    // $('hue').onclick= function() {
-    //   applyFilter(21, this.checked && new f.HueRotation({
-    //       rotation: document.getElementById('hue-value').value,
-    //     }));
-    // };
-    //
-    // $('hue-value').oninput = function() {
-    //   applyFilterValue(21, 'rotation', this.value);
-    // };
-    //
-    // $('blend-image').onclick= function() {
-    //   applyFilter(20, this.checked && new f.BlendImage({
-    //       image: fImage,
-    //     }));
-    // };
-    //
-    // $('blend-image-mode').onchange = function() {
-    //   applyFilterValue(20, 'mode', this.value);
-    // };
-    // var imageElement = document.createElement('img');
-    // imageElement.src = '../assets/printio.png';
-    // var fImage = new fabric.Image(imageElement);
-    // fImage.scaleX = 1;
-    // fImage.scaleY = 1;
-    // fImage.top = 15;
-    // fImage.left = 15;
-    //
+    filterList[4] = filters.brownie && new f.Brownie();
+    filterList[9] = filters.vintage && new f.Vintage();
+    filterList[14] = filters.technicolor && new f.Technicolor();
+    filterList[15] = filters.polaroid && new f.Polaroid();
+    filterList[18] = filters.kodachrome && new f.Kodachrome();
+    filterList[19] = filters.blackwhite && new f.BlackWhite();
+    filterList[0] = filters.grayscale && new f.Grayscale();
+    filterList[1] = filters.invert && new f.Invert();
+    filterList[2] = filters.removeColor && new f.RemoveColor({
+            distance: filters.removeColorDistance,
+            color: filters.removeColorColor,
+          });
+    filterList[3] = filters.sepia && new f.Sepia();
+    filterList[5] = filters.brightness && new f.Brightness({
+      brightness: parseFloat(filters.brightnessValue)
+    });
+    filterList[17] = filters.gamma && new f.Gamma({
+      gamma: [
+        parseFloat(filters.gammaRed), parseFloat(filters.gammaGreen), parseFloat(filters.gammaBlue)
+      ]
+    });
 
-  }
+    filterList[6] = filters.contrast && new f.Contrast({
+      contrast: parseFloat(filters.contractValue)
+    });
 
-  applyFilter(index, filter) {
+    filterList[7] = filters.saturation && new f.Saturation({
+      saturation: parseFloat(filters.saturationValue)
+    });
+
+    filterList[8] = filters.noise && new f.Noise({
+      noise: parseInt(filters.noiseValue, 10)
+    });
+
+    filterList[10] = filters.pixelate && new f.Pixelate({
+      blocksize: parseInt(filters.pixelateValue, 10)
+    });
+
+    filterList[11] = filters.blur && new f.Blur({
+      value: parseFloat(filters.bluerValue)
+    });
+
+    filterList[12] = filters.sharpen && new f.Convolute({
+      matrix: [  0, -1,  0,
+        -1,  5, -1,
+        0, -1,  0 ]
+    });
+    filterList[13] = filters.emboss && new f.Convolute({
+      matrix: [ 1,   1,  1,
+        1, 0.7, -1,
+        -1,  -1, -1 ]
+    });
+
+    filterList[16] = filters.blend && new f.BlendColor({
+      color: filters.blendColor,
+      mode: filters.blendMode,
+      alpha: filters.blendAlpha
+    });
+
+    filterList[21] = filters.hue && new f.HueRotation({
+      rotation: filters.hueValue,
+    });
+
     if (this.canvas && this.canvas._objects.length > 1) {
       const obj = this.canvas._objects[0];
-      obj.filters[index] = filter;
+      obj.filters = filterList;
       obj.applyFilters();
       this.canvas.renderAll();
     }
   }
 
 
-  applyFilterValue(index, prop, value) {
-    if (this.canvas && this.canvas._objects.length > 1) {
-      const obj = this.canvas._objects[0];
-      if (obj.filters[index]) {
-        obj.filters[index][prop] = value;
-        obj.applyFilters();
-        this.canvas.renderAll();
-    }
-  }
-}
-
-
   render() {
-    const selectedImage = this.props.selectedImage;
 
-    //this.renderFilters(this.props.filters);
 
     return(
-    <div>
-      <div className="row">
-        <div className="col-xs12">
-          <div className="tool-bar">
+      <div>
+        <div>
+          <canvas id="aamjs-canvas" className="designer-canvas"/>
+          <div>
+            {this.renderCoverageMessage()}
+          </div>
+        </div>
+        <div>
+          {this.renderTools()}
+        </div>
+      </div>
+    );
+  }
+
+  renderTools() {
+    console.log('step', this.props.currentStep);
+    switch(STATES[this.props.currentStep]) {
+      case 'background':
+        return <Gallery/>;
+      case 'filters':
+
+        return <Filters/>;
+      case 'logo' :
+        return (
+          <div>
+            <div className="form-group">
+              <button className="btn bnt-primary" onClick={this.onAddLogo}>Add Logo</button>
+            </div>
+            <div>
+              <button className='btn btn-primary btn-right' onClick={()=> this.props.nextStep()}>Next</button>
+              <button className='btn btn-primary btn-right' onClick={()=> this.props.previousStep()}>Back</button>
+            </div>
+          </div>
+          );
+      case 'text':
+        return(
+          <div>
             <div className="form-group">
               <input type="text" className="form-control" ref={(input) => { this.textInput = input; }}/>
               <button className="btn bnt-primary" onClick={this.onAddText}>Add Text</button>
             </div>
-            <div className="form-group">
-              <button className="btn bnt-primary" onClick={this.onAddLogo}>Add Logo</button>
-              <button className="btn bnt-primary" onClick={this.onSubmit}>Submit</button>
+            <div>
+              <button className='btn btn-primary btn-right' onClick={()=> this.props.nextStep()}>Next</button>
+              <button className='btn btn-primary btn-right' onClick={()=> this.props.previousStep()}>Back</button>
             </div>
           </div>
-        </div>
-      </div>
-      <div>
-        <canvas id="aamjs-canvas" className="designer-canvas"></canvas>
-        <div>
-          {this.renderCoverageMessage()}
-        </div>
-      </div>
-      <div>
-        <Filters/>
-      </div>
+        );
+      case 'submit':
+        return(
+          <div>
+            <div className="form-group">
+              <button className="btn btn-success" onClick={this.onSubmit}>Submit</button>
+            </div>
+            <div>
+              <button className='btn btn-primary pull-right' onClick={()=> this.props.previousStep()}>Back</button>
+            </div>
+          </div>
+        );
 
-    </div>
-
-    );
+      default:
+        return null;
+    }
   }
 
   renderCoverageMessage() {
@@ -476,9 +412,9 @@ class Canvas extends  Component {
 }
 
 const mapStateToProps = (state) => {
-  const {template, selectedImage} = state.designer;
+  const {template, selectedImage, currentStep} = state.designer;
   const filters = state.filters;
- return {template, selectedImage, filters};
+ return {template, selectedImage, filters, currentStep};
 };
 
 const getCoordinates = (img) => {
@@ -514,4 +450,4 @@ const isInside = (inner, outer) => {
 //   })();
 // }
 
-export default connect(mapStateToProps, {submitImage})(Canvas);
+export default connect(mapStateToProps, {submitImage, nextStep, previousStep})(Canvas);

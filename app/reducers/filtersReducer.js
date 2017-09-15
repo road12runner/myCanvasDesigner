@@ -49,6 +49,7 @@ const INITIAL_STATE ={
   saturation: false, saturationValue: '0',
   noise: false, noiseValue:'100',
   blur: false, bluerValue: '0.1',
+  sharpen: false,
   pixelate: false, pixelateValue: '4',
   emboss: false,
   blend: false, blendColor: '#00f900', blendMode: 'add', blendAlpha:'1',
