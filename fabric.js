@@ -1,3 +1,4 @@
+/* build: `node build.js modules=ALL minifier=uglifyjs` */
  /*! Fabric.js Copyright 2008-2015, Printio (Juriy Zaytsev, Maxim Chernyak) */
 
 var fabric = fabric || { version: '2.0.0-beta6' };
@@ -35,7 +36,23 @@ fabric.isTouchSupported = 'ontouchstart' in fabric.document.documentElement;
 fabric.isLikelyNode = typeof Buffer !== 'undefined' &&
                       typeof window === 'undefined';
 
-
+/* _FROM_SVG_START_ */
+/**
+ * Attributes parsed from all SVG elements
+ * @type array
+ */
+fabric.SHARED_ATTRIBUTES = [
+  "display",
+  "transform",
+  "fill", "fill-opacity", "fill-rule",
+  "opacity",
+  "stroke", "stroke-dasharray", "stroke-linecap",
+  "stroke-linejoin", "stroke-miterlimit",
+  "stroke-opacity", "stroke-width",
+  "id",
+  "instantiated_by_use"
+];
+/* _FROM_SVG_END_ */
 
 /**
  * Pixel per Inch as a default value set to 96. Can be changed for more realistic conversion.
@@ -112,6 +129,14 @@ fabric.initFilterBackend = function() {
     return (new fabric.Canvas2dFilterBackend());
   }
 };
+
+
+if (typeof document !== 'undefined' && typeof window !== 'undefined') {
+  // ensure globality even if entire library were function wrapped (as in Meteor.js packaging system)
+  window.fabric = fabric;
+}
+
+
 /*:
 	----------------------------------------------------
 	event.js : 1.1.5 : 2014/02/12 : MIT License
@@ -134,7 +159,8 @@ fabric.initFilterBackend = function() {
 
 if (typeof(eventjs) === "undefined") var eventjs = {};
 
-(function(root) { 
+(function(root) { "use strict";
+
 // Add custom *EventListener commands to HTMLElements (set false to prevent funkiness).
 root.modifyEventListener = false;
 
@@ -2070,6 +2096,8 @@ Event.Gesture._gestureHandlers.orientation = root.orientation;
 return root;
 
 })(Event.proxy);
+
+
 (function() {
 
   /**
@@ -2197,6 +2225,8 @@ return root;
     trigger: fire
   };
 })();
+
+
 /**
  * @namespace fabric.Collection
  */
@@ -2209,6 +2239,9 @@ fabric.Collection = {
    * (if `renderOnAddRemove` is not `false`).
    * in case of Group no changes to bounding box are made.
    * Objects should be instances of (or inherit from) fabric.Object
+   * Use of this function is highly discouraged for groups.
+   * you can add a bunch of objects with the add method but then you NEED
+   * to run a addWithUpdate call for the Group class or position/bbox will be wrong.
    * @param {...fabric.Object} object Zero or more fabric instances
    * @return {Self} thisArg
    * @chainable
@@ -2227,6 +2260,9 @@ fabric.Collection = {
   /**
    * Inserts an object into collection at specified index, then renders canvas (if `renderOnAddRemove` is not `false`)
    * An object should be an instance of (or inherit from) fabric.Object
+   * Use of this function is highly discouraged for groups.
+   * you can add a bunch of objects with the insertAt method but then you NEED
+   * to run a addWithUpdate call for the Group class or position/bbox will be wrong.
    * @param {Object} object Object to insert
    * @param {Number} index Index to insert object at
    * @param {Boolean} nonSplicing When `true`, no splicing (shifting) of objects occurs
@@ -2351,6 +2387,8 @@ fabric.Collection = {
     }, 0);
   }
 };
+
+
 /**
  * @namespace fabric.CommonMethods
  */
@@ -2465,6 +2503,8 @@ fabric.CommonMethods = {
     return this[property];
   }
 };
+
+
 (function(global) {
 
   var sqrt = Math.sqrt,
@@ -3178,6 +3218,8 @@ fabric.CommonMethods = {
     }
   };
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function() {
 
   /**
@@ -3622,6 +3664,8 @@ fabric.CommonMethods = {
    */
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function() {
 
   var arcToSegmentsCache = { },
@@ -3881,6 +3925,8 @@ fabric.CommonMethods = {
   fabric.util.getBoundsOfCurve = getBoundsOfCurve;
 
 })();
+
+
 (function() {
 
   var slice = Array.prototype.slice;
@@ -3975,6 +4021,8 @@ fabric.CommonMethods = {
   };
 
 })();
+
+
 (function() {
   /**
    * Copies all enumerable properties of one js object to another
@@ -4038,6 +4086,8 @@ fabric.CommonMethods = {
   };
   fabric.util.object.extend(fabric.util, fabric.Observable);
 })();
+
+
 (function() {
 
   /**
@@ -4148,6 +4198,8 @@ fabric.CommonMethods = {
     graphemeSplit: graphemeSplit
   };
 })();
+
+
 (function() {
 
   var slice = Array.prototype.slice, emptyFunction = function() { },
@@ -4263,6 +4315,8 @@ fabric.CommonMethods = {
 
   fabric.util.createClass = createClass;
 })();
+
+
 (function () {
 
   var unknown = 'unknown';
@@ -4496,6 +4550,8 @@ fabric.CommonMethods = {
   fabric.util.getPointer = getPointer;
 
 })();
+
+
 (function () {
 
   /**
@@ -4566,6 +4622,8 @@ fabric.CommonMethods = {
   fabric.util.setStyle = setStyle;
 
 })();
+
+
 (function() {
 
   var _slice = Array.prototype.slice;
@@ -4866,6 +4924,8 @@ fabric.CommonMethods = {
   fabric.util.getElementStyle = getElementStyle;
 
 })();
+
+
 (function() {
 
   function addParamToUrl(url, param) {
@@ -4939,6 +4999,8 @@ fabric.CommonMethods = {
 
   fabric.util.request = request;
 })();
+
+
 /**
  * Wrapper around `console.log` (when available)
  * @param {*} [values] Values to log
@@ -4966,6 +5028,8 @@ if (typeof console !== 'undefined') {
   });
 }
 /* eslint-enable */
+
+
 (function() {
 
   function noop() {
@@ -5053,6 +5117,8 @@ if (typeof console !== 'undefined') {
   fabric.util.requestAnimFrame = requestAnimFrame;
   fabric.util.cancelAnimFrame = cancelAnimFrame;
 })();
+
+
 (function() {
   // Calculate an in-between color. Returns a "rgba()" string.
   // Credit: Edwin Martin <edwin@bitstorm.org>
@@ -5102,6 +5168,8 @@ if (typeof console !== 'undefined') {
   fabric.util.animateColor = animateColor;
 
 })();
+
+
 (function() {
 
   function normalize(a, c, p, s) {
@@ -5500,6 +5568,8 @@ if (typeof console !== 'undefined') {
   };
 
 })();
+
+
 (function(global) {
 
   'use strict';
@@ -6502,6 +6572,8 @@ if (typeof console !== 'undefined') {
   });
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 fabric.ElementsParser = function(elements, callback, options, reviver, parsingOptions) {
   this.elements = elements;
   this.callback = callback;
@@ -6585,6 +6657,8 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
     this.callback(this.instances, this.elements);
   }
 };
+
+
 (function(global) {
 
   'use strict';
@@ -6922,6 +6996,8 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -7094,6 +7170,8 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -7730,9 +7808,80 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function() {
 
-  
+  /* _FROM_SVG_START_ */
+  function getColorStop(el) {
+    var style = el.getAttribute('style'),
+        offset = el.getAttribute('offset') || 0,
+        color, colorAlpha, opacity, i;
+
+    // convert percents to absolute values
+    offset = parseFloat(offset) / (/%$/.test(offset) ? 100 : 1);
+    offset = offset < 0 ? 0 : offset > 1 ? 1 : offset;
+    if (style) {
+      var keyValuePairs = style.split(/\s*;\s*/);
+
+      if (keyValuePairs[keyValuePairs.length - 1] === '') {
+        keyValuePairs.pop();
+      }
+
+      for (i = keyValuePairs.length; i--; ) {
+
+        var split = keyValuePairs[i].split(/\s*:\s*/),
+            key = split[0].trim(),
+            value = split[1].trim();
+
+        if (key === 'stop-color') {
+          color = value;
+        }
+        else if (key === 'stop-opacity') {
+          opacity = value;
+        }
+      }
+    }
+
+    if (!color) {
+      color = el.getAttribute('stop-color') || 'rgb(0,0,0)';
+    }
+    if (!opacity) {
+      opacity = el.getAttribute('stop-opacity');
+    }
+
+    color = new fabric.Color(color);
+    colorAlpha = color.getAlpha();
+    opacity = isNaN(parseFloat(opacity)) ? 1 : parseFloat(opacity);
+    opacity *= colorAlpha;
+
+    return {
+      offset: offset,
+      color: color.toRgb(),
+      opacity: opacity
+    };
+  }
+
+  function getLinearCoords(el) {
+    return {
+      x1: el.getAttribute('x1') || 0,
+      y1: el.getAttribute('y1') || 0,
+      x2: el.getAttribute('x2') || '100%',
+      y2: el.getAttribute('y2') || 0
+    };
+  }
+
+  function getRadialCoords(el) {
+    return {
+      x1: el.getAttribute('fx') || el.getAttribute('cx') || '50%',
+      y1: el.getAttribute('fy') || el.getAttribute('cy') || '50%',
+      r1: 0,
+      x2: el.getAttribute('cx') || '50%',
+      y2: el.getAttribute('cy') || '50%',
+      r2: el.getAttribute('r') || '50%'
+    };
+  }
+  /* _FROM_SVG_END_ */
 
   var clone = fabric.util.object.clone;
 
@@ -7827,7 +7976,100 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
       return object;
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns SVG representation of an gradient
+     * @param {Object} object Object to create a gradient for
+     * @return {String} SVG representation of an gradient (linear/radial)
+     */
+    toSVG: function(object) {
+      var coords = clone(this.coords, true), i, len,
+          markup, commonAttributes, colorStops = clone(this.colorStops, true),
+          needsSwap = coords.r1 > coords.r2,
+          offsetX = object.width / 2, offsetY = object.height / 2;
+      // colorStops must be sorted ascending
+      colorStops.sort(function(a, b) {
+        return a.offset - b.offset;
+      });
+      if (object.type === 'path') {
+        offsetX -= object.pathOffset.x;
+        offsetY -= object.pathOffset.y;
+      }
+      for (var prop in coords) {
+        if (prop === 'x1' || prop === 'x2') {
+          coords[prop] += this.offsetX - offsetX;
+        }
+        else if (prop === 'y1' || prop === 'y2') {
+          coords[prop] += this.offsetY - offsetY;
+        }
+      }
+
+      commonAttributes = 'id="SVGID_' + this.id +
+                     '" gradientUnits="userSpaceOnUse"';
+      if (this.gradientTransform) {
+        commonAttributes += ' gradientTransform="matrix(' + this.gradientTransform.join(' ') + ')" ';
+      }
+      if (this.type === 'linear') {
+        markup = [
+          '<linearGradient ',
+          commonAttributes,
+          ' x1="', coords.x1,
+          '" y1="', coords.y1,
+          '" x2="', coords.x2,
+          '" y2="', coords.y2,
+          '">\n'
+        ];
+      }
+      else if (this.type === 'radial') {
+        // svg radial gradient has just 1 radius. the biggest.
+        markup = [
+          '<radialGradient ',
+          commonAttributes,
+          ' cx="', needsSwap ? coords.x1 : coords.x2,
+          '" cy="', needsSwap ? coords.y1 : coords.y2,
+          '" r="', needsSwap ? coords.r1 : coords.r2,
+          '" fx="', needsSwap ? coords.x2 : coords.x1,
+          '" fy="', needsSwap ? coords.y2 : coords.y1,
+          '">\n'
+        ];
+      }
+
+      if (this.type === 'radial') {
+        if (needsSwap) {
+          // svg goes from internal to external radius. if radius are inverted, swap color stops.
+          colorStops = colorStops.concat();
+          colorStops.reverse();
+          for (i = 0, len = colorStops.length; i < len; i++) {
+            colorStops[i].offset = 1 - colorStops[i].offset;
+          }
+        }
+        var minRadius = Math.min(coords.r1, coords.r2);
+        if (minRadius > 0) {
+          // i have to shift all colorStops and add new one in 0.
+          var maxRadius = Math.max(coords.r1, coords.r2),
+              percentageShift = minRadius / maxRadius;
+          for (i = 0, len = colorStops.length; i < len; i++) {
+            colorStops[i].offset += percentageShift * (1 - colorStops[i].offset);
+          }
+        }
+      }
+
+      for (i = 0, len = colorStops.length; i < len; i++) {
+        var colorStop = colorStops[i];
+        markup.push(
+          '<stop ',
+            'offset="', (colorStop.offset * 100) + '%',
+            '" style="stop-color:', colorStop.color,
+            (colorStop.opacity !== null ? ';stop-opacity: ' + colorStop.opacity : ';'),
+          '"/>\n'
+        );
+      }
+
+      markup.push((this.type === 'linear' ? '</linearGradient>\n' : '</radialGradient>\n'));
+
+      return markup.join('');
+    },
+    /* _TO_SVG_END_ */
 
     /**
      * Returns an instance of CanvasGradient
@@ -7867,7 +8109,94 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
 
   fabric.util.object.extend(fabric.Gradient, {
 
-    
+    /* _FROM_SVG_START_ */
+    /**
+     * Returns {@link fabric.Gradient} instance from an SVG element
+     * @static
+     * @memberOf fabric.Gradient
+     * @param {SVGGradientElement} el SVG gradient element
+     * @param {fabric.Object} instance
+     * @return {fabric.Gradient} Gradient instance
+     * @see http://www.w3.org/TR/SVG/pservers.html#LinearGradientElement
+     * @see http://www.w3.org/TR/SVG/pservers.html#RadialGradientElement
+     */
+    fromElement: function(el, instance) {
+
+      /**
+       *  @example:
+       *
+       *  <linearGradient id="linearGrad1">
+       *    <stop offset="0%" stop-color="white"/>
+       *    <stop offset="100%" stop-color="black"/>
+       *  </linearGradient>
+       *
+       *  OR
+       *
+       *  <linearGradient id="linearGrad2">
+       *    <stop offset="0" style="stop-color:rgb(255,255,255)"/>
+       *    <stop offset="1" style="stop-color:rgb(0,0,0)"/>
+       *  </linearGradient>
+       *
+       *  OR
+       *
+       *  <radialGradient id="radialGrad1">
+       *    <stop offset="0%" stop-color="white" stop-opacity="1" />
+       *    <stop offset="50%" stop-color="black" stop-opacity="0.5" />
+       *    <stop offset="100%" stop-color="white" stop-opacity="1" />
+       *  </radialGradient>
+       *
+       *  OR
+       *
+       *  <radialGradient id="radialGrad2">
+       *    <stop offset="0" stop-color="rgb(255,255,255)" />
+       *    <stop offset="0.5" stop-color="rgb(0,0,0)" />
+       *    <stop offset="1" stop-color="rgb(255,255,255)" />
+       *  </radialGradient>
+       *
+       */
+
+      var colorStopEls = el.getElementsByTagName('stop'),
+          type,
+          gradientUnits = el.getAttribute('gradientUnits') || 'objectBoundingBox',
+          gradientTransform = el.getAttribute('gradientTransform'),
+          colorStops = [],
+          coords, ellipseMatrix, i;
+
+      if (el.nodeName === 'linearGradient' || el.nodeName === 'LINEARGRADIENT') {
+        type = 'linear';
+      }
+      else {
+        type = 'radial';
+      }
+
+      if (type === 'linear') {
+        coords = getLinearCoords(el);
+      }
+      else if (type === 'radial') {
+        coords = getRadialCoords(el);
+      }
+
+      for (i = colorStopEls.length; i--; ) {
+        colorStops.push(getColorStop(colorStopEls[i]));
+      }
+
+      ellipseMatrix = _convertPercentUnitsToValues(instance, coords, gradientUnits);
+
+      var gradient = new fabric.Gradient({
+        type: type,
+        coords: coords,
+        colorStops: colorStops,
+        offsetX: -instance.left,
+        offsetY: -instance.top
+      });
+
+      if (gradientTransform || ellipseMatrix !== '') {
+        gradient.gradientTransform = fabric.parseTransformAttribute((gradientTransform || '') + ellipseMatrix);
+      }
+
+      return gradient;
+    },
+    /* _FROM_SVG_END_ */
 
     /**
      * Returns {@link fabric.Gradient} instance from its object representation
@@ -7929,6 +8258,8 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
     return ellipseMatrix;
   }
 })();
+
+
 (function() {
 
   'use strict';
@@ -8032,7 +8363,45 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
       return object;
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns SVG representation of a pattern
+     * @param {fabric.Object} object
+     * @return {String} SVG representation of a pattern
+     */
+    toSVG: function(object) {
+      var patternSource = typeof this.source === 'function' ? this.source() : this.source,
+          patternWidth = patternSource.width / object.width,
+          patternHeight = patternSource.height / object.height,
+          patternOffsetX = this.offsetX / object.width,
+          patternOffsetY = this.offsetY / object.height,
+          patternImgSrc = '';
+      if (this.repeat === 'repeat-x' || this.repeat === 'no-repeat') {
+        patternHeight = 1;
+      }
+      if (this.repeat === 'repeat-y' || this.repeat === 'no-repeat') {
+        patternWidth = 1;
+      }
+      if (patternSource.src) {
+        patternImgSrc = patternSource.src;
+      }
+      else if (patternSource.toDataURL) {
+        patternImgSrc = patternSource.toDataURL();
+      }
+
+      return '<pattern id="SVGID_' + this.id +
+                    '" x="' + patternOffsetX +
+                    '" y="' + patternOffsetY +
+                    '" width="' + patternWidth +
+                    '" height="' + patternHeight + '">\n' +
+               '<image x="0" y="0"' +
+                      ' width="' + patternSource.width +
+                      '" height="' + patternSource.height +
+                      '" xlink:href="' + patternImgSrc +
+               '"></image>\n' +
+             '</pattern>\n';
+    },
+    /* _TO_SVG_END_ */
 
     setOptions: function(options) {
       for (var prop in options) {
@@ -8066,6 +8435,8 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
     }
   });
 })();
+
+
 (function(global) {
 
   'use strict';
@@ -8172,7 +8543,47 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
       return [this.offsetX, this.offsetY, this.blur, this.color].join('px ');
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns SVG representation of a shadow
+     * @param {fabric.Object} object
+     * @return {String} SVG representation of a shadow
+     */
+    toSVG: function(object) {
+      var fBoxX = 40, fBoxY = 40, NUM_FRACTION_DIGITS = fabric.Object.NUM_FRACTION_DIGITS,
+          offset = fabric.util.rotateVector(
+            { x: this.offsetX, y: this.offsetY },
+            fabric.util.degreesToRadians(-object.angle)),
+          BLUR_BOX = 20;
+
+      if (object.width && object.height) {
+        //http://www.w3.org/TR/SVG/filters.html#FilterEffectsRegion
+        // we add some extra space to filter box to contain the blur ( 20 )
+        fBoxX = toFixed((Math.abs(offset.x) + this.blur) / object.width, NUM_FRACTION_DIGITS) * 100 + BLUR_BOX;
+        fBoxY = toFixed((Math.abs(offset.y) + this.blur) / object.height, NUM_FRACTION_DIGITS) * 100 + BLUR_BOX;
+      }
+      if (object.flipX) {
+        offset.x *= -1;
+      }
+      if (object.flipY) {
+        offset.y *= -1;
+      }
+      return (
+        '<filter id="SVGID_' + this.id + '" y="-' + fBoxY + '%" height="' + (100 + 2 * fBoxY) + '%" ' +
+          'x="-' + fBoxX + '%" width="' + (100 + 2 * fBoxX) + '%" ' + '>\n' +
+          '\t<feGaussianBlur in="SourceAlpha" stdDeviation="' +
+            toFixed(this.blur ? this.blur / 2 : 0, NUM_FRACTION_DIGITS) + '"></feGaussianBlur>\n' +
+          '\t<feOffset dx="' + toFixed(offset.x, NUM_FRACTION_DIGITS) +
+          '" dy="' + toFixed(offset.y, NUM_FRACTION_DIGITS) + '" result="oBlur" ></feOffset>\n' +
+          '\t<feFlood flood-color="' + this.color + '"/>\n' +
+          '\t<feComposite in2="oBlur" operator="in" />\n' +
+          '\t<feMerge>\n' +
+            '\t\t<feMergeNode></feMergeNode>\n' +
+            '\t\t<feMergeNode in="SourceGraphic"></feMergeNode>\n' +
+          '\t</feMerge>\n' +
+        '</filter>\n');
+    },
+    /* _TO_SVG_END_ */
 
     /**
      * Returns object representation of a shadow
@@ -8210,6 +8621,8 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
   fabric.Shadow.reOffsetsAndBlur = /(?:\s|^)(-?\d+(?:px)?(?:\s?|$))?(-?\d+(?:px)?(?:\s?|$))?(\d+(?:px)?)?(?:\s?|$)(?:$|\s)/;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function () {
 
   'use strict';
@@ -9387,7 +9800,269 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
       return data;
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * When true, getSvgTransform() will apply the StaticCanvas.viewportTransform to the SVG transformation. When true,
+     * a zoomed canvas will then produce zoomed SVG output.
+     * @type Boolean
+     * @default
+     */
+    svgViewportTransformation: true,
+
+    /**
+     * Returns SVG representation of canvas
+     * @function
+     * @param {Object} [options] Options object for SVG output
+     * @param {Boolean} [options.suppressPreamble=false] If true xml tag is not included
+     * @param {Object} [options.viewBox] SVG viewbox object
+     * @param {Number} [options.viewBox.x] x-cooridnate of viewbox
+     * @param {Number} [options.viewBox.y] y-coordinate of viewbox
+     * @param {Number} [options.viewBox.width] Width of viewbox
+     * @param {Number} [options.viewBox.height] Height of viewbox
+     * @param {String} [options.encoding=UTF-8] Encoding of SVG output
+     * @param {String} [options.width] desired width of svg with or without units
+     * @param {String} [options.height] desired height of svg with or without units
+     * @param {Function} [reviver] Method for further parsing of svg elements, called after each fabric object converted into svg representation.
+     * @return {String} SVG string
+     * @tutorial {@link http://fabricjs.com/fabric-intro-part-3#serialization}
+     * @see {@link http://jsfiddle.net/fabricjs/jQ3ZZ/|jsFiddle demo}
+     * @example <caption>Normal SVG output</caption>
+     * var svg = canvas.toSVG();
+     * @example <caption>SVG output without preamble (without &lt;?xml ../>)</caption>
+     * var svg = canvas.toSVG({suppressPreamble: true});
+     * @example <caption>SVG output with viewBox attribute</caption>
+     * var svg = canvas.toSVG({
+     *   viewBox: {
+     *     x: 100,
+     *     y: 100,
+     *     width: 200,
+     *     height: 300
+     *   }
+     * });
+     * @example <caption>SVG output with different encoding (default: UTF-8)</caption>
+     * var svg = canvas.toSVG({encoding: 'ISO-8859-1'});
+     * @example <caption>Modify SVG output with reviver function</caption>
+     * var svg = canvas.toSVG(null, function(svg) {
+     *   return svg.replace('stroke-dasharray: ; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; ', '');
+     * });
+     */
+    toSVG: function(options, reviver) {
+      options || (options = { });
+
+      var markup = [];
+
+      this._setSVGPreamble(markup, options);
+      this._setSVGHeader(markup, options);
+
+      this._setSVGBgOverlayColor(markup, 'backgroundColor');
+      this._setSVGBgOverlayImage(markup, 'backgroundImage', reviver);
+
+      this._setSVGObjects(markup, reviver);
+
+      this._setSVGBgOverlayColor(markup, 'overlayColor');
+      this._setSVGBgOverlayImage(markup, 'overlayImage', reviver);
+
+      markup.push('</svg>');
+
+      return markup.join('');
+    },
+
+    /**
+     * @private
+     */
+    _setSVGPreamble: function(markup, options) {
+      if (options.suppressPreamble) {
+        return;
+      }
+      markup.push(
+        '<?xml version="1.0" encoding="', (options.encoding || 'UTF-8'), '" standalone="no" ?>\n',
+          '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" ',
+            '"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">\n'
+      );
+    },
+
+    /**
+     * @private
+     */
+    _setSVGHeader: function(markup, options) {
+      var width = options.width || this.width,
+          height = options.height || this.height,
+          vpt, viewBox = 'viewBox="0 0 ' + this.width + ' ' + this.height + '" ',
+          NUM_FRACTION_DIGITS = fabric.Object.NUM_FRACTION_DIGITS;
+
+      if (options.viewBox) {
+        viewBox = 'viewBox="' +
+                options.viewBox.x + ' ' +
+                options.viewBox.y + ' ' +
+                options.viewBox.width + ' ' +
+                options.viewBox.height + '" ';
+      }
+      else {
+        if (this.svgViewportTransformation) {
+          vpt = this.viewportTransform;
+          viewBox = 'viewBox="' +
+                  toFixed(-vpt[4] / vpt[0], NUM_FRACTION_DIGITS) + ' ' +
+                  toFixed(-vpt[5] / vpt[3], NUM_FRACTION_DIGITS) + ' ' +
+                  toFixed(this.width / vpt[0], NUM_FRACTION_DIGITS) + ' ' +
+                  toFixed(this.height / vpt[3], NUM_FRACTION_DIGITS) + '" ';
+        }
+      }
+
+      markup.push(
+        '<svg ',
+          'xmlns="http://www.w3.org/2000/svg" ',
+          'xmlns:xlink="http://www.w3.org/1999/xlink" ',
+          'version="1.1" ',
+          'width="', width, '" ',
+          'height="', height, '" ',
+          viewBox,
+          'xml:space="preserve">\n',
+        '<desc>Created with Fabric.js ', fabric.version, '</desc>\n',
+        '<defs>\n',
+          this.createSVGFontFacesMarkup(),
+          this.createSVGRefElementsMarkup(),
+        '</defs>\n'
+      );
+    },
+
+    /**
+     * Creates markup containing SVG referenced elements like patterns, gradients etc.
+     * @return {String}
+     */
+    createSVGRefElementsMarkup: function() {
+      var _this = this,
+          markup = ['backgroundColor', 'overlayColor'].map(function(prop) {
+            var fill = _this[prop];
+            if (fill && fill.toLive) {
+              return fill.toSVG(_this, false);
+            }
+          });
+      return markup.join('');
+    },
+
+    /**
+     * Creates markup containing SVG font faces,
+     * font URLs for font faces must be collected by developers
+     * and are not extracted from the DOM by fabricjs
+     * @param {Array} objects Array of fabric objects
+     * @return {String}
+     */
+    createSVGFontFacesMarkup: function() {
+      var markup = '', fontList = { }, obj, fontFamily,
+          style, row, rowIndex, _char, charIndex, i, len,
+          fontPaths = fabric.fontPaths, objects = this.getObjects();
+
+      for (i = 0, len = objects.length; i < len; i++) {
+        obj = objects[i];
+        fontFamily = obj.fontFamily;
+        if (obj.type.indexOf('text') === -1 || fontList[fontFamily] || !fontPaths[fontFamily]) {
+          continue;
+        }
+        fontList[fontFamily] = true;
+        if (!obj.styles) {
+          continue;
+        }
+        style = obj.styles;
+        for (rowIndex in style) {
+          row = style[rowIndex];
+          for (charIndex in row) {
+            _char = row[charIndex];
+            fontFamily = _char.fontFamily;
+            if (!fontList[fontFamily] && fontPaths[fontFamily]) {
+              fontList[fontFamily] = true;
+            }
+          }
+        }
+      }
+
+      for (var j in fontList) {
+        markup += [
+          '\t\t@font-face {\n',
+          '\t\t\tfont-family: \'', j, '\';\n',
+          '\t\t\tsrc: url(\'', fontPaths[j], '\');\n',
+          '\t\t}\n'
+        ].join('');
+      }
+
+      if (markup) {
+        markup = [
+          '\t<style type="text/css">',
+          '<![CDATA[\n',
+          markup,
+          ']]>',
+          '</style>\n'
+        ].join('');
+      }
+
+      return markup;
+    },
+
+    /**
+     * @private
+     */
+    _setSVGObjects: function(markup, reviver) {
+      var instance, i, len, objects = this.getObjects();
+      for (i = 0, len = objects.length; i < len; i++) {
+        instance = objects[i];
+        if (instance.excludeFromExport) {
+          continue;
+        }
+        this._setSVGObject(markup, instance, reviver);
+      }
+    },
+
+    /**
+     * @private
+     */
+    _setSVGObject: function(markup, instance, reviver) {
+      markup.push(instance.toSVG(reviver));
+    },
+
+    /**
+     * @private
+     */
+    _setSVGBgOverlayImage: function(markup, property, reviver) {
+      if (this[property] && this[property].toSVG) {
+        markup.push(this[property].toSVG(reviver));
+      }
+    },
+
+    /**
+     * @private
+     */
+    _setSVGBgOverlayColor: function(markup, property) {
+      var filler = this[property];
+      if (!filler) {
+        return;
+      }
+      if (filler.toLive) {
+        var repeat = filler.repeat;
+        markup.push(
+          '<rect transform="translate(', this.width / 2, ',', this.height / 2, ')"',
+            ' x="', filler.offsetX - this.width / 2, '" y="', filler.offsetY - this.height / 2, '" ',
+            'width="',
+              (repeat === 'repeat-y' || repeat === 'no-repeat'
+                ? filler.source.width
+                : this.width),
+            '" height="',
+              (repeat === 'repeat-x' || repeat === 'no-repeat'
+                ? filler.source.height
+                : this.height),
+            '" fill="url(#SVGID_' + filler.id + ')"',
+          '></rect>\n'
+        );
+      }
+      else {
+        markup.push(
+          '<rect x="0" y="0" ',
+            'width="', this.width,
+            '" height="', this.height,
+            '" fill="', this[property], '"',
+          '></rect>\n'
+        );
+      }
+    },
+    /* _TO_SVG_END_ */
 
     /**
      * Moves an object or the objects of a multiple selection
@@ -9703,6 +10378,8 @@ fabric.ElementsParser.prototype.checkIfDone = function() {
   fabric.StaticCanvas.prototype.toJSON = fabric.StaticCanvas.prototype.toObject;
 
 })();
+
+
 /**
  * BaseBrush class
  * @class fabric.BaseBrush
@@ -9810,6 +10487,8 @@ fabric.BaseBrush = fabric.util.createClass(/** @lends fabric.BaseBrush.prototype
     ctx.shadowBlur = ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
   }
 });
+
+
 (function() {
 
   /**
@@ -10028,6 +10707,8 @@ fabric.BaseBrush = fabric.util.createClass(/** @lends fabric.BaseBrush.prototype
     }
   });
 })();
+
+
 /**
  * CircleBrush class
  * @class fabric.CircleBrush
@@ -10147,6 +10828,8 @@ fabric.CircleBrush = fabric.util.createClass(fabric.BaseBrush, /** @lends fabric
     return pointerPoint;
   }
 });
+
+
 /**
  * SprayBrush class
  * @class fabric.SprayBrush
@@ -10352,6 +11035,8 @@ fabric.SprayBrush = fabric.util.createClass( fabric.BaseBrush, /** @lends fabric
     this.sprayChunks.push(this.sprayChunkPoints);
   }
 });
+
+
 /**
  * PatternBrush class
  * @class fabric.PatternBrush
@@ -10411,6 +11096,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
     return path;
   }
 });
+
+
 (function() {
 
   var getPointer = fabric.util.getPointer,
@@ -11519,7 +12206,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
           pointer = this.getPointer(e, ignoreZoom),
           activeObject = this._activeObject,
           aObjects = this.getActiveObjects(),
-          activeTarget;
+          activeTarget, activeTargetSubs;
+
       // first check current group (if one exists)
       // active group does not check sub targets like normal groups.
       // if active group just exits.
@@ -11539,11 +12227,14 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
         }
         else {
           activeTarget = activeObject;
+          activeTargetSubs = this.targets;
+          this.targets = [];
         }
       }
       var target = this._searchPossibleTargets(this._objects, pointer);
       if (e[this.altSelectionKey] && target && activeTarget && target !== activeTarget) {
         target = activeTarget;
+        this.targets = activeTargetSubs;
       }
       return target;
     },
@@ -11994,6 +12685,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
     fabric.Canvas.prototype._setCursorFromEvent = function() { };
   }
 })();
+
+
 (function() {
 
   var cursorOffset = {
@@ -12890,6 +13583,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
     }
   });
 })();
+
+
 (function() {
 
   var min = Math.min,
@@ -13056,199 +13751,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
   });
 
 })();
-(function(global) {
 
-  'use strict';
 
-  var fabric = global.fabric || (global.fabric = { });
-
-  if (fabric.ActiveSelection) {
-    return;
-  }
-
-  /**
-   * Group class
-   * @class fabric.ActiveSelection
-   * @extends fabric.Group
-   * @tutorial {@link http://fabricjs.com/fabric-intro-part-3#groups}
-   * @see {@link fabric.ActiveSelection#initialize} for constructor definition
-   */
-  fabric.ActiveSelection = fabric.util.createClass(fabric.Group, /** @lends fabric.ActiveSelection.prototype */ {
-
-    /**
-     * Type of an object
-     * @type String
-     * @default
-     */
-    type: 'activeSelection',
-
-    /**
-     * Constructor
-     * @param {Object} objects ActiveSelection objects
-     * @param {Object} [options] Options object
-     * @return {Object} thisArg
-     */
-    initialize: function(objects, options) {
-      options = options || {};
-      this._objects = objects || [];
-      for (var i = this._objects.length; i--; ) {
-        this._objects[i].group = this;
-      }
-
-      if (options.originX) {
-        this.originX = options.originX;
-      }
-      if (options.originY) {
-        this.originY = options.originY;
-      }
-      this._calcBounds();
-      this._updateObjectsCoords();
-      fabric.Object.prototype.initialize.call(this, options);
-      this.setCoords();
-    },
-
-    /**
-     * Change te activeSelection to a normal group,
-     * High level function that automatically adds it to canvas as
-     * active object. no events fired.
-     * @since 2.0.0
-     * @return {fabric.Group}
-     */
-    toGroup: function() {
-      var objects = this._objects;
-      this._objects = [];
-      var options = this.toObject();
-      var newGroup = new fabric.Group([]);
-      delete options.objects;
-      newGroup.set(options);
-      newGroup.type = 'group';
-      objects.forEach(function(object) {
-        object.group = newGroup;
-        object.canvas.remove(object);
-      });
-      newGroup._objects = objects;
-      if (!this.canvas) {
-        return newGroup;
-      }
-      var canvas = this.canvas;
-      canvas.add(newGroup);
-      canvas._activeObject = newGroup;
-      newGroup.setCoords();
-      return newGroup;
-    },
-
-    /**
-     * If returns true, deselection is cancelled.
-     * @since 2.0.0
-     * @return {Boolean} [cancel]
-     */
-    onDeselect: function() {
-      this.destroy();
-      return false;
-    },
-
-    /**
-     * Returns string representation of a group
-     * @return {String}
-     */
-    toString: function() {
-      return '#<fabric.ActiveSelection: (' + this.complexity() + ')>';
-    },
-
-    /**
-     * @private
-     */
-    _set: function(key, value) {
-      var i = this._objects.length;
-      if (key === 'canvas') {
-        while (i--) {
-          this._objects[i].set(key, value);
-        }
-      }
-      if (this.useSetOnGroup) {
-        while (i--) {
-          this._objects[i].setOnGroup(key, value);
-        }
-      }
-      fabric.Object.prototype._set.call(this, key, value);
-    },
-
-    /**
-     * Decide if the object should cache or not. Create its own cache level
-     * objectCaching is a global flag, wins over everything
-     * needsItsOwnCache should be used when the object drawing method requires
-     * a cache step. None of the fabric classes requires it.
-     * Generally you do not cache objects in groups because the group outside is cached.
-     * @return {Boolean}
-     */
-    shouldCache: function() {
-      return false;
-    },
-
-    /**
-     * Check if this object or a child object will cast a shadow
-     * @return {Boolean}
-     */
-    willDrawShadow: function() {
-      if (this.shadow) {
-        return this.callSuper('willDrawShadow');
-      }
-      for (var i = 0, len = this._objects.length; i < len; i++) {
-        if (this._objects[i].willDrawShadow()) {
-          return true;
-        }
-      }
-      return false;
-    },
-
-    /**
-     * Check if this group or its parent group are caching, recursively up
-     * @return {Boolean}
-     */
-    isOnACache: function() {
-      return false;
-    },
-
-    /**
-     * Renders controls and borders for the object
-     * @param {CanvasRenderingContext2D} ctx Context to render on
-     * @param {Object} [styleOverride] properties to override the object style
-     * @param {Object} [childrenOverride] properties to override the children overrides
-     */
-    _renderControls: function(ctx, styleOverride, childrenOverride) {
-      ctx.save();
-      ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
-      this.callSuper('_renderControls', ctx, styleOverride);
-      childrenOverride = childrenOverride || { };
-      if (typeof childrenOverride.hasControls === 'undefined') {
-        childrenOverride.hasControls = false;
-      }
-      if (typeof childrenOverride.hasRotatingPoint === 'undefined') {
-        childrenOverride.hasRotatingPoint = false;
-      }
-      childrenOverride.forActiveSelection = true;
-      for (var i = 0, len = this._objects.length; i < len; i++) {
-        this._objects[i]._renderControls(ctx, childrenOverride);
-      }
-      ctx.restore();
-    },
-  });
-
-  /**
-   * Returns {@link fabric.ActiveSelection} instance from an object representation
-   * @static
-   * @memberOf fabric.ActiveSelection
-   * @param {Object} object Object to create a group from
-   * @param {Function} [callback] Callback to invoke when an ActiveSelection instance is created
-   */
-  fabric.ActiveSelection.fromObject = function(object, callback) {
-    fabric.util.enlivenObjects(object.objects, function(enlivenedObjects) {
-      delete object.objects;
-      callback && callback(new fabric.ActiveSelection(enlivenedObjects, object, true));
-    });
-  };
-
-})(typeof exports !== 'undefined' ? exports : this);
 (function () {
 
   var supportQuality = fabric.StaticCanvas.supports('toDataURLWithQuality');
@@ -13363,6 +13867,8 @@ fabric.PatternBrush = fabric.util.createClass(fabric.PencilBrush, /** @lends fab
   });
 
 })();
+
+
 fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.StaticCanvas.prototype */ {
 
   /**
@@ -13586,6 +14092,8 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
     }
   }
 });
+
+
 /**
  * Adds support for multi-touch gestures using the Event.js library.
  * Fires the following custom events:
@@ -13748,6 +14256,8 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
     }
   });
 })();
+
+
 (function(global) {
 
   'use strict';
@@ -14608,7 +15118,7 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
 
     /**
      * Return the object opacity counting also the group property
-     * @return {Object} object with scaleX and scaleY properties
+     * @return {Number}
      */
     getObjectOpacity: function() {
       var opacity = this.opacity;
@@ -15468,6 +15978,8 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
   fabric.Object.__uid = 0;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function() {
 
   var degreesToRadians = fabric.util.degreesToRadians,
@@ -15730,6 +16242,8 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
   });
 
 })();
+
+
 (function() {
 
   function getCoords(coords) {
@@ -16295,6 +16809,8 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
     },
   });
 })();
+
+
 fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prototype */ {
 
   /**
@@ -16375,6 +16891,210 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     return this;
   }
 });
+
+
+/* _TO_SVG_START_ */
+(function() {
+  var NUM_FRACTION_DIGITS = fabric.Object.NUM_FRACTION_DIGITS;
+
+  function getSvgColorString(prop, value) {
+    if (!value) {
+      return prop + ': none; ';
+    }
+    else if (value.toLive) {
+      return prop + ': url(#SVGID_' + value.id + '); ';
+    }
+    else {
+      var color = new fabric.Color(value),
+          str = prop + ': ' + color.toRgb() + '; ',
+          opacity = color.getAlpha();
+      if (opacity !== 1) {
+        //change the color in rgb + opacity
+        str += prop + '-opacity: ' + opacity.toString() + '; ';
+      }
+      return str;
+    }
+  }
+
+  var toFixed = fabric.util.toFixed;
+
+  fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prototype */ {
+    /**
+     * Returns styles-string for svg-export
+     * @param {Boolean} skipShadow a boolean to skip shadow filter output
+     * @return {String}
+     */
+    getSvgStyles: function(skipShadow) {
+
+      var fillRule = this.fillRule,
+          strokeWidth = this.strokeWidth ? this.strokeWidth : '0',
+          strokeDashArray = this.strokeDashArray ? this.strokeDashArray.join(' ') : 'none',
+          strokeLineCap = this.strokeLineCap ? this.strokeLineCap : 'butt',
+          strokeLineJoin = this.strokeLineJoin ? this.strokeLineJoin : 'miter',
+          strokeMiterLimit = this.strokeMiterLimit ? this.strokeMiterLimit : '4',
+          opacity = typeof this.opacity !== 'undefined' ? this.opacity : '1',
+          visibility = this.visible ? '' : ' visibility: hidden;',
+          filter = skipShadow ? '' : this.getSvgFilter(),
+          fill = getSvgColorString('fill', this.fill),
+          stroke = getSvgColorString('stroke', this.stroke);
+
+      return [
+        stroke,
+        'stroke-width: ', strokeWidth, '; ',
+        'stroke-dasharray: ', strokeDashArray, '; ',
+        'stroke-linecap: ', strokeLineCap, '; ',
+        'stroke-linejoin: ', strokeLineJoin, '; ',
+        'stroke-miterlimit: ', strokeMiterLimit, '; ',
+        fill,
+        'fill-rule: ', fillRule, '; ',
+        'opacity: ', opacity, ';',
+        filter,
+        visibility
+      ].join('');
+    },
+
+    /**
+     * Returns styles-string for svg-export
+     * @param {Object} style style properties for the span a boolean to skip shadow filter output
+     * @param {Boolean} useWhiteSpace a boolean to include an additional attribute in the style.
+     * @return {String}
+     */
+    getSvgSpanStyles: function(style, useWhiteSpace) {
+      var strokeWidth = style.strokeWidth ? 'stroke-width: ' + style.strokeWidth + '; ' : '',
+          fontFamily = style.fontFamily ? 'font-family: ' + style.fontFamily.replace(/"/g, '\'') + '; ' : '',
+          fontSize = style.fontSize ? 'font-size: ' + style.fontSize + '; ' : '',
+          fontStyle = style.fontStyle ? 'font-style: ' + style.fontStyle + '; ' : '',
+          fontWeight = style.fontWeight ? 'font-weight: ' + style.fontWeight + '; ' : '',
+          fill = style.fill ? getSvgColorString('fill', style.fill) : '',
+          stroke = style.stroke ? getSvgColorString('stroke', style.stroke) : '',
+          textDecoration = this.getSvgTextDecoration(style);
+
+      return [
+        stroke,
+        strokeWidth,
+        fontFamily,
+        fontSize,
+        fontStyle,
+        fontWeight,
+        textDecoration,
+        fill,
+        useWhiteSpace ? 'white-space: pre; ' : ''
+      ].join('');
+    },
+
+    getSvgTextDecoration: function(style) {
+      if ('overline' in style || 'underline' in style || 'linethrough' in style) {
+        return 'text-decoration: ' + (style.overline ? 'overline ' : '') +
+          (style.underline ? 'underline ' : '') + (style.linethrough ? 'line-through ' : '') + ';';
+      }
+      return '';
+    },
+
+    /**
+     * Returns filter for svg shadow
+     * @return {String}
+     */
+    getSvgFilter: function() {
+      return this.shadow ? 'filter: url(#SVGID_' + this.shadow.id + ');' : '';
+    },
+
+    /**
+     * Returns id attribute for svg output
+     * @return {String}
+     */
+    getSvgId: function() {
+      return this.id ? 'id="' + this.id + '" ' : '';
+    },
+
+    /**
+     * Returns transform-string for svg-export
+     * @return {String}
+     */
+    getSvgTransform: function() {
+      var angle = this.angle,
+          skewX = (this.skewX % 360),
+          skewY = (this.skewY % 360),
+          center = this.getCenterPoint(),
+
+          NUM_FRACTION_DIGITS = fabric.Object.NUM_FRACTION_DIGITS,
+
+          translatePart = 'translate(' +
+                            toFixed(center.x, NUM_FRACTION_DIGITS) +
+                            ' ' +
+                            toFixed(center.y, NUM_FRACTION_DIGITS) +
+                          ')',
+
+          anglePart = angle !== 0
+            ? (' rotate(' + toFixed(angle, NUM_FRACTION_DIGITS) + ')')
+            : '',
+
+          scalePart = (this.scaleX === 1 && this.scaleY === 1)
+            ? '' :
+            (' scale(' +
+              toFixed(this.scaleX, NUM_FRACTION_DIGITS) +
+              ' ' +
+              toFixed(this.scaleY, NUM_FRACTION_DIGITS) +
+            ')'),
+
+          skewXPart = skewX !== 0 ? ' skewX(' + toFixed(skewX, NUM_FRACTION_DIGITS) + ')' : '',
+
+          skewYPart = skewY !== 0 ? ' skewY(' + toFixed(skewY, NUM_FRACTION_DIGITS) + ')' : '',
+
+          flipXPart = this.flipX ? ' matrix(-1 0 0 1 0 0) ' : '',
+
+          flipYPart = this.flipY ? ' matrix(1 0 0 -1 0 0)' : '';
+
+      return [
+        translatePart, anglePart, scalePart, flipXPart, flipYPart, skewXPart, skewYPart
+      ].join('');
+    },
+
+    /**
+     * Returns transform-string for svg-export from the transform matrix of single elements
+     * @return {String}
+     */
+    getSvgTransformMatrix: function() {
+      return this.transformMatrix ? ' matrix(' + this.transformMatrix.join(' ') + ') ' : '';
+    },
+
+    _setSVGBg: function(textBgRects) {
+      if (this.backgroundColor) {
+        textBgRects.push(
+          '\t\t<rect ',
+            this._getFillAttributes(this.backgroundColor),
+            ' x="',
+            toFixed(-this.width / 2, NUM_FRACTION_DIGITS),
+            '" y="',
+            toFixed(-this.height / 2, NUM_FRACTION_DIGITS),
+            '" width="',
+            toFixed(this.width, NUM_FRACTION_DIGITS),
+            '" height="',
+            toFixed(this.height, NUM_FRACTION_DIGITS),
+          '"></rect>\n');
+      }
+    },
+
+    /**
+     * @private
+     */
+    _createBaseSVGMarkup: function() {
+      var markup = [];
+
+      if (this.fill && this.fill.toLive) {
+        markup.push(this.fill.toSVG(this, false));
+      }
+      if (this.stroke && this.stroke.toLive) {
+        markup.push(this.stroke.toSVG(this, false));
+      }
+      if (this.shadow) {
+        markup.push(this.shadow.toSVG(this));
+      }
+      return markup;
+    }
+  });
+})();
+/* _TO_SVG_END_ */
+
 
 (function() {
 
@@ -16473,6 +17193,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     }
   });
 })();
+
+
 (function() {
 
   var degreesToRadians = fabric.util.degreesToRadians;
@@ -16893,6 +17615,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     }
   });
 })();
+
+
 fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.StaticCanvas.prototype */ {
 
   /**
@@ -17116,6 +17840,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     });
   }
 });
+
+
 (function(global) {
 
   'use strict';
@@ -17371,10 +18097,61 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       };
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns SVG representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup(),
+          p = this.calcLinePoints();
+      markup.push(
+        '<line ', this.getSvgId(),
+          'x1="', p.x1,
+          '" y1="', p.y1,
+          '" x2="', p.x2,
+          '" y2="', p.y2,
+          '" style="', this.getSvgStyles(),
+          '" transform="', this.getSvgTransform(),
+          this.getSvgTransformMatrix(),
+        '"/>\n'
+      );
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
   });
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by {@link fabric.Line.fromElement})
+   * @static
+   * @memberOf fabric.Line
+   * @see http://www.w3.org/TR/SVG/shapes.html#LineElement
+   */
+  fabric.Line.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat('x1 y1 x2 y2'.split(' '));
+
+  /**
+   * Returns fabric.Line instance from an SVG element
+   * @static
+   * @memberOf fabric.Line
+   * @param {SVGElement} element Element to parse
+   * @param {Object} [options] Options object
+   * @param {Function} [callback] callback function invoked after parsing
+   */
+  fabric.Line.fromElement = function(element, callback, options) {
+    options = options || { };
+    var parsedAttributes = fabric.parseAttributes(element, fabric.Line.ATTRIBUTE_NAMES),
+        points = [
+          parsedAttributes.x1 || 0,
+          parsedAttributes.y1 || 0,
+          parsedAttributes.x2 || 0,
+          parsedAttributes.y2 || 0
+        ];
+    callback(new fabric.Line(points, extend(parsedAttributes, options)));
+  };
+  /* _FROM_SVG_END_ */
 
   /**
    * Returns fabric.Line instance from an object representation
@@ -17419,6 +18196,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   }
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -17510,7 +18289,48 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return this.callSuper('toObject', ['radius', 'startAngle', 'endAngle'].concat(propertiesToInclude));
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns svg representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup(), x = 0, y = 0,
+          angle = (this.endAngle - this.startAngle) % ( 2 * pi);
+
+      if (angle === 0) {
+        markup.push(
+          '<circle ', this.getSvgId(),
+            'cx="' + x + '" cy="' + y + '" ',
+            'r="', this.radius,
+            '" style="', this.getSvgStyles(),
+            '" transform="', this.getSvgTransform(),
+            ' ', this.getSvgTransformMatrix(),
+          '"/>\n'
+        );
+      }
+      else {
+        var startX = Math.cos(this.startAngle) * this.radius,
+            startY = Math.sin(this.startAngle) * this.radius,
+            endX = Math.cos(this.endAngle) * this.radius,
+            endY = Math.sin(this.endAngle) * this.radius,
+            largeFlag = angle > pi ? '1' : '0';
+
+        markup.push(
+          '<path d="M ' + startX + ' ' + startY,
+          ' A ' + this.radius + ' ' + this.radius,
+          ' 0 ', +largeFlag + ' 1', ' ' + endX + ' ' + endY,
+          '" style="', this.getSvgStyles(),
+          '" transform="', this.getSvgTransform(),
+          ' ', this.getSvgTransformMatrix(),
+          '"/>\n'
+        );
+      }
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
 
     /**
      * @private
@@ -17553,7 +18373,45 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     },
   });
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by {@link fabric.Circle.fromElement})
+   * @static
+   * @memberOf fabric.Circle
+   * @see: http://www.w3.org/TR/SVG/shapes.html#CircleElement
+   */
+  fabric.Circle.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat('cx cy r'.split(' '));
+
+  /**
+   * Returns {@link fabric.Circle} instance from an SVG element
+   * @static
+   * @memberOf fabric.Circle
+   * @param {SVGElement} element Element to parse
+   * @param {Object} [options] Options object
+   * @param {Function} [callback] Options callback invoked after parsing is finished
+   * @throws {Error} If value of `r` attribute is missing or invalid
+   */
+  fabric.Circle.fromElement = function(element, callback, options) {
+    options || (options = { });
+
+    var parsedAttributes = fabric.parseAttributes(element, fabric.Circle.ATTRIBUTE_NAMES);
+
+    if (!isValidRadius(parsedAttributes)) {
+      throw new Error('value of `r` attribute is required and can not be negative');
+    }
+
+    parsedAttributes.left = (parsedAttributes.left || 0) - parsedAttributes.radius;
+    parsedAttributes.top = (parsedAttributes.top || 0) - parsedAttributes.radius;
+    callback(new fabric.Circle(extend(parsedAttributes, options)));
+  };
+
+  /**
+   * @private
+   */
+  function isValidRadius(attributes) {
+    return (('radius' in attributes) && (attributes.radius >= 0));
+  }
+  /* _FROM_SVG_END_ */
 
   /**
    * Returns {@link fabric.Circle} instance from an object representation
@@ -17568,6 +18426,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -17639,7 +18499,34 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       ctx.closePath();
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns SVG representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup(),
+          widthBy2 = this.width / 2,
+          heightBy2 = this.height / 2,
+          points = [
+            -widthBy2 + ' ' + heightBy2,
+            '0 ' + -heightBy2,
+            widthBy2 + ' ' + heightBy2
+          ]
+          .join(',');
+
+      markup.push(
+        '<polygon ', this.getSvgId(),
+          'points="', points,
+          '" style="', this.getSvgStyles(),
+          '" transform="', this.getSvgTransform(),
+        '"/>'
+      );
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
   });
 
   /**
@@ -17654,6 +18541,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -17765,7 +18654,28 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return this.callSuper('toObject', ['rx', 'ry'].concat(propertiesToInclude));
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns svg representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup();
+      markup.push(
+        '<ellipse ', this.getSvgId(),
+          'cx="0" cy="0" ',
+          'rx="', this.rx,
+          '" ry="', this.ry,
+          '" style="', this.getSvgStyles(),
+          '" transform="', this.getSvgTransform(),
+          this.getSvgTransformMatrix(),
+        '"/>\n'
+      );
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
 
     /**
      * @private
@@ -17788,7 +18698,34 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     },
   });
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by {@link fabric.Ellipse.fromElement})
+   * @static
+   * @memberOf fabric.Ellipse
+   * @see http://www.w3.org/TR/SVG/shapes.html#EllipseElement
+   */
+  fabric.Ellipse.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat('cx cy rx ry'.split(' '));
+
+  /**
+   * Returns {@link fabric.Ellipse} instance from an SVG element
+   * @static
+   * @memberOf fabric.Ellipse
+   * @param {SVGElement} element Element to parse
+   * @param {Object} [options] Options object
+   * @param {Function} [callback] Options callback invoked after parsing is finished
+   * @return {fabric.Ellipse}
+   */
+  fabric.Ellipse.fromElement = function(element, callback, options) {
+    options || (options = { });
+
+    var parsedAttributes = fabric.parseAttributes(element, fabric.Ellipse.ATTRIBUTE_NAMES);
+
+    parsedAttributes.left = (parsedAttributes.left || 0) - parsedAttributes.rx;
+    parsedAttributes.top = (parsedAttributes.top || 0) - parsedAttributes.ry;
+    callback(new fabric.Ellipse(extend(parsedAttributes, options)));
+  };
+  /* _FROM_SVG_END_ */
 
   /**
    * Returns {@link fabric.Ellipse} instance from an object representation
@@ -17803,6 +18740,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -17953,10 +18892,61 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return this.callSuper('toObject', ['rx', 'ry'].concat(propertiesToInclude));
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns svg representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup(), x = -this.width / 2, y = -this.height / 2;
+      markup.push(
+        '<rect ', this.getSvgId(),
+          'x="', x, '" y="', y,
+          '" rx="', this.get('rx'), '" ry="', this.get('ry'),
+          '" width="', this.width, '" height="', this.height,
+          '" style="', this.getSvgStyles(),
+          '" transform="', this.getSvgTransform(),
+          this.getSvgTransformMatrix(),
+        '"/>\n');
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
   });
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by `fabric.Rect.fromElement`)
+   * @static
+   * @memberOf fabric.Rect
+   * @see: http://www.w3.org/TR/SVG/shapes.html#RectElement
+   */
+  fabric.Rect.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat('x y rx ry width height'.split(' '));
+
+  /**
+   * Returns {@link fabric.Rect} instance from an SVG element
+   * @static
+   * @memberOf fabric.Rect
+   * @param {SVGElement} element Element to parse
+   * @param {Function} callback callback function invoked after parsing
+   * @param {Object} [options] Options object
+   */
+  fabric.Rect.fromElement = function(element, callback, options) {
+    if (!element) {
+      return callback(null);
+    }
+    options = options || { };
+
+    var parsedAttributes = fabric.parseAttributes(element, fabric.Rect.ATTRIBUTE_NAMES);
+
+    parsedAttributes.left = parsedAttributes.left || 0;
+    parsedAttributes.top  = parsedAttributes.top  || 0;
+    var rect = new fabric.Rect(extend((options ? fabric.util.object.clone(options) : { }), parsedAttributes));
+    rect.visible = rect.visible && rect.width > 0 && rect.height > 0;
+    callback(rect);
+  };
+  /* _FROM_SVG_END_ */
 
   /**
    * Returns {@link fabric.Rect} instance from an object representation
@@ -17970,6 +18960,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -18090,7 +19082,34 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       });
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns svg representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var points = [], diffX = this.pathOffset.x, diffY = this.pathOffset.y,
+          markup = this._createBaseSVGMarkup();
+
+      for (var i = 0, len = this.points.length; i < len; i++) {
+        points.push(
+          toFixed(this.points[i].x - diffX, NUM_FRACTION_DIGITS), ',',
+          toFixed(this.points[i].y - diffY, NUM_FRACTION_DIGITS), ' '
+        );
+      }
+      markup.push(
+        '<', this.type, ' ', this.getSvgId(),
+          'points="', points.join(''),
+          '" style="', this.getSvgStyles(),
+          '" transform="', this.getSvgTransform(),
+          ' ', this.getSvgTransformMatrix(),
+        '"/>\n'
+      );
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
 
 
     /**
@@ -18152,7 +19171,35 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     }
   });
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by {@link fabric.Polyline.fromElement})
+   * @static
+   * @memberOf fabric.Polyline
+   * @see: http://www.w3.org/TR/SVG/shapes.html#PolylineElement
+   */
+  fabric.Polyline.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat();
+
+  /**
+   * Returns fabric.Polyline instance from an SVG element
+   * @static
+   * @memberOf fabric.Polyline
+   * @param {SVGElement} element Element to parser
+   * @param {Function} callback callback function invoked after parsing
+   * @param {Object} [options] Options object
+   */
+  fabric.Polyline.fromElement = function(element, callback, options) {
+    if (!element) {
+      return callback(null);
+    }
+    options || (options = { });
+
+    var points = fabric.parsePointsAttribute(element.getAttribute('points')),
+        parsedAttributes = fabric.parseAttributes(element, fabric.Polyline.ATTRIBUTE_NAMES);
+
+    callback(new fabric.Polyline(points, fabric.util.object.extend(parsedAttributes, options)));
+  };
+  /* _FROM_SVG_END_ */
 
   /**
    * Returns fabric.Polyline instance from an object representation
@@ -18166,6 +19213,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -18216,7 +19265,36 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     },
   });
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by `fabric.Polygon.fromElement`)
+   * @static
+   * @memberOf fabric.Polygon
+   * @see: http://www.w3.org/TR/SVG/shapes.html#PolygonElement
+   */
+  fabric.Polygon.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat();
+
+  /**
+   * Returns {@link fabric.Polygon} instance from an SVG element
+   * @static
+   * @memberOf fabric.Polygon
+   * @param {SVGElement} element Element to parse
+   * @param {Function} callback callback function invoked after parsing
+   * @param {Object} [options] Options object
+   */
+  fabric.Polygon.fromElement = function(element, callback, options) {
+    if (!element) {
+      return callback(null);
+    }
+
+    options || (options = { });
+
+    var points = fabric.parsePointsAttribute(element.getAttribute('points')),
+        parsedAttributes = fabric.parseAttributes(element, fabric.Polygon.ATTRIBUTE_NAMES);
+
+    callback(new fabric.Polygon(points, extend(parsedAttributes, options)));
+  };
+  /* _FROM_SVG_END_ */
 
   /**
    * Returns fabric.Polygon instance from an object representation
@@ -18230,6 +19308,8 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -18702,7 +19782,33 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return o;
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns svg representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var chunks = [],
+          markup = this._createBaseSVGMarkup(), addTransform = '';
+
+      for (var i = 0, len = this.path.length; i < len; i++) {
+        chunks.push(this.path[i].join(' '));
+      }
+      var path = chunks.join(' ');
+      addTransform = ' translate(' + (-this.pathOffset.x) + ', ' + (-this.pathOffset.y) + ') ';
+      markup.push(
+        '<path ', this.getSvgId(),
+          'd="', path,
+          '" style="', this.getSvgStyles(),
+          '" transform="', this.getSvgTransform(), addTransform,
+          this.getSvgTransformMatrix(), '" stroke-linecap="round" ',
+        '/>\n'
+      );
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
 
     /**
      * Returns number representation of an instance complexity
@@ -19107,9 +20213,33 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     }
   };
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by `fabric.Path.fromElement`)
+   * @static
+   * @memberOf fabric.Path
+   * @see http://www.w3.org/TR/SVG/paths.html#PathElement
+   */
+  fabric.Path.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat(['d']);
+
+  /**
+   * Creates an instance of fabric.Path from an SVG <path> element
+   * @static
+   * @memberOf fabric.Path
+   * @param {SVGElement} element to parse
+   * @param {Function} callback Callback to invoke when an fabric.Path instance is created
+   * @param {Object} [options] Options object
+   * @param {Function} [callback] Options callback invoked after parsing is finished
+   */
+  fabric.Path.fromElement = function(element, callback, options) {
+    var parsedAttributes = fabric.parseAttributes(element, fabric.Path.ATTRIBUTE_NAMES);
+    callback(new fabric.Path(parsedAttributes.d, extend(parsedAttributes, options)));
+  };
+  /* _FROM_SVG_END_ */
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -19505,6 +20635,11 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
      * @chainable
      */
     destroy: function() {
+      // when group is destroyed objects needs to get a repaint to be eventually
+      // displayed on canvas.
+      this._objects.forEach(function(object) {
+        object.set('dirty', true);
+      });
       return this._restoreObjectsState();
     },
 
@@ -19615,7 +20750,33 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return obj;
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns svg representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup();
+      markup.push(
+        '<g ', this.getSvgId(), 'transform="',
+        /* avoiding styles intentionally */
+        this.getSvgTransform(),
+        this.getSvgTransformMatrix(),
+        '" style="',
+        this.getSvgFilter(),
+        '">\n'
+      );
+
+      for (var i = 0, len = this._objects.length; i < len; i++) {
+        markup.push('\t', this._objects[i].toSVG(reviver));
+      }
+
+      markup.push('</g>\n');
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
   });
 
   /**
@@ -19634,6 +20795,203 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
   };
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
+(function(global) {
+
+  'use strict';
+
+  var fabric = global.fabric || (global.fabric = { });
+
+  if (fabric.ActiveSelection) {
+    return;
+  }
+
+  /**
+   * Group class
+   * @class fabric.ActiveSelection
+   * @extends fabric.Group
+   * @tutorial {@link http://fabricjs.com/fabric-intro-part-3#groups}
+   * @see {@link fabric.ActiveSelection#initialize} for constructor definition
+   */
+  fabric.ActiveSelection = fabric.util.createClass(fabric.Group, /** @lends fabric.ActiveSelection.prototype */ {
+
+    /**
+     * Type of an object
+     * @type String
+     * @default
+     */
+    type: 'activeSelection',
+
+    /**
+     * Constructor
+     * @param {Object} objects ActiveSelection objects
+     * @param {Object} [options] Options object
+     * @return {Object} thisArg
+     */
+    initialize: function(objects, options) {
+      options = options || {};
+      this._objects = objects || [];
+      for (var i = this._objects.length; i--; ) {
+        this._objects[i].group = this;
+      }
+
+      if (options.originX) {
+        this.originX = options.originX;
+      }
+      if (options.originY) {
+        this.originY = options.originY;
+      }
+      this._calcBounds();
+      this._updateObjectsCoords();
+      fabric.Object.prototype.initialize.call(this, options);
+      this.setCoords();
+    },
+
+    /**
+     * Change te activeSelection to a normal group,
+     * High level function that automatically adds it to canvas as
+     * active object. no events fired.
+     * @since 2.0.0
+     * @return {fabric.Group}
+     */
+    toGroup: function() {
+      var objects = this._objects;
+      this._objects = [];
+      var options = this.toObject();
+      var newGroup = new fabric.Group([]);
+      delete options.objects;
+      newGroup.set(options);
+      newGroup.type = 'group';
+      objects.forEach(function(object) {
+        object.group = newGroup;
+        object.canvas.remove(object);
+      });
+      newGroup._objects = objects;
+      if (!this.canvas) {
+        return newGroup;
+      }
+      var canvas = this.canvas;
+      canvas.add(newGroup);
+      canvas._activeObject = newGroup;
+      newGroup.setCoords();
+      return newGroup;
+    },
+
+    /**
+     * If returns true, deselection is cancelled.
+     * @since 2.0.0
+     * @return {Boolean} [cancel]
+     */
+    onDeselect: function() {
+      this.destroy();
+      return false;
+    },
+
+    /**
+     * Returns string representation of a group
+     * @return {String}
+     */
+    toString: function() {
+      return '#<fabric.ActiveSelection: (' + this.complexity() + ')>';
+    },
+
+    /**
+     * @private
+     */
+    _set: function(key, value) {
+      var i = this._objects.length;
+      if (key === 'canvas') {
+        while (i--) {
+          this._objects[i].set(key, value);
+        }
+      }
+      if (this.useSetOnGroup) {
+        while (i--) {
+          this._objects[i].setOnGroup(key, value);
+        }
+      }
+      fabric.Object.prototype._set.call(this, key, value);
+    },
+
+    /**
+     * Decide if the object should cache or not. Create its own cache level
+     * objectCaching is a global flag, wins over everything
+     * needsItsOwnCache should be used when the object drawing method requires
+     * a cache step. None of the fabric classes requires it.
+     * Generally you do not cache objects in groups because the group outside is cached.
+     * @return {Boolean}
+     */
+    shouldCache: function() {
+      return false;
+    },
+
+    /**
+     * Check if this object or a child object will cast a shadow
+     * @return {Boolean}
+     */
+    willDrawShadow: function() {
+      if (this.shadow) {
+        return this.callSuper('willDrawShadow');
+      }
+      for (var i = 0, len = this._objects.length; i < len; i++) {
+        if (this._objects[i].willDrawShadow()) {
+          return true;
+        }
+      }
+      return false;
+    },
+
+    /**
+     * Check if this group or its parent group are caching, recursively up
+     * @return {Boolean}
+     */
+    isOnACache: function() {
+      return false;
+    },
+
+    /**
+     * Renders controls and borders for the object
+     * @param {CanvasRenderingContext2D} ctx Context to render on
+     * @param {Object} [styleOverride] properties to override the object style
+     * @param {Object} [childrenOverride] properties to override the children overrides
+     */
+    _renderControls: function(ctx, styleOverride, childrenOverride) {
+      ctx.save();
+      ctx.globalAlpha = this.isMoving ? this.borderOpacityWhenMoving : 1;
+      this.callSuper('_renderControls', ctx, styleOverride);
+      childrenOverride = childrenOverride || { };
+      if (typeof childrenOverride.hasControls === 'undefined') {
+        childrenOverride.hasControls = false;
+      }
+      if (typeof childrenOverride.hasRotatingPoint === 'undefined') {
+        childrenOverride.hasRotatingPoint = false;
+      }
+      childrenOverride.forActiveSelection = true;
+      for (var i = 0, len = this._objects.length; i < len; i++) {
+        this._objects[i]._renderControls(ctx, childrenOverride);
+      }
+      ctx.restore();
+    },
+  });
+
+  /**
+   * Returns {@link fabric.ActiveSelection} instance from an object representation
+   * @static
+   * @memberOf fabric.ActiveSelection
+   * @param {Object} object Object to create a group from
+   * @param {Function} [callback] Callback to invoke when an ActiveSelection instance is created
+   */
+  fabric.ActiveSelection.fromObject = function(object, callback) {
+    fabric.util.enlivenObjects(object.objects, function(enlivenedObjects) {
+      delete object.objects;
+      callback && callback(new fabric.ActiveSelection(enlivenedObjects, object, true));
+    });
+  };
+
+})(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -19905,7 +21263,45 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
       return object;
     },
 
-    
+    /* _TO_SVG_START_ */
+    /**
+     * Returns SVG representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup(), x = -this.width / 2, y = -this.height / 2;
+      markup.push(
+        '<g transform="', this.getSvgTransform(), this.getSvgTransformMatrix(), '">\n',
+          '\t<image ', this.getSvgId(), 'xlink:href="', this.getSvgSrc(true),
+            '" x="', x, '" y="', y,
+            '" style="', this.getSvgStyles(),
+            // we're essentially moving origin of transformation from top/left corner to the center of the shape
+            // by wrapping it in container <g> element with actual transformation, then offsetting object to the top/left
+            // so that object's center aligns with container's left/top
+            '" width="', this.width,
+            '" height="', this.height,
+          '"></image>\n'
+      );
+
+      if (this.stroke || this.strokeDashArray) {
+        var origFill = this.fill;
+        this.fill = null;
+        markup.push(
+          '<rect ',
+            'x="', x, '" y="', y,
+            '" width="', this.width, '" height="', this.height,
+            '" style="', this.getSvgStyles(),
+          '"/>\n'
+        );
+        this.fill = origFill;
+      }
+
+      markup.push('</g>\n');
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+    /* _TO_SVG_END_ */
 
     /**
      * Returns source of an image
@@ -20240,9 +21636,34 @@ fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prot
     }, null, imgOptions && imgOptions.crossOrigin);
   };
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by {@link fabric.Image.fromElement})
+   * @static
+   * @see {@link http://www.w3.org/TR/SVG/struct.html#ImageElement}
+   */
+  fabric.Image.ATTRIBUTE_NAMES =
+    fabric.SHARED_ATTRIBUTES.concat('x y width height preserveAspectRatio xlink:href crossOrigin'.split(' '));
+
+  /**
+   * Returns {@link fabric.Image} instance from an SVG element
+   * @static
+   * @param {SVGElement} element Element to parse
+   * @param {Object} [options] Options object
+   * @param {Function} callback Callback to execute when fabric.Image object is created
+   * @return {fabric.Image} Instance of fabric.Image
+   */
+  fabric.Image.fromElement = function(element, callback, options) {
+    var parsedAttributes = fabric.parseAttributes(element, fabric.Image.ATTRIBUTE_NAMES);
+
+    fabric.Image.fromURL(parsedAttributes['xlink:href'], callback,
+      extend((options ? fabric.util.object.clone(options) : { }), parsedAttributes));
+  };
+  /* _FROM_SVG_END_ */
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 fabric.util.object.extend(fabric.Object.prototype, /** @lends fabric.Object.prototype */ {
 
   /**
@@ -20328,6 +21749,8 @@ fabric.util.object.extend(fabric.StaticCanvas.prototype, /** @lends fabric.Stati
     return this;
   }
 });
+
+
 (function() {
 
   'use strict';
@@ -20707,6 +22130,8 @@ function copyGLTo2DPutImageData(gl, targetCanvas) {
   var imgData = new ImageData(u8Clamped, width);
   ctx.putImageData(imgData, 0, 0);
 }
+
+
 (function() {
 
   'use strict';
@@ -20772,6 +22197,8 @@ function copyGLTo2DPutImageData(gl, targetCanvas) {
 
   };
 })();
+
+
 /**
  * @namespace fabric.Image.filters
  * @memberOf fabric.Image
@@ -21104,6 +22531,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   callback && callback(filter);
   return filter;
 };
+
+
 (function(global) {
 
   'use strict';
@@ -21261,6 +22690,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
    */
   fabric.Image.filters.ColorMatrix.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -21374,6 +22805,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Brightness.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -21726,6 +23159,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Convolute.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -21871,6 +23306,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Grayscale.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -21975,6 +23412,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
 
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -22109,6 +23548,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Noise.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -22242,6 +23683,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Pixelate.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -22410,6 +23853,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.RemoveColor.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -22495,6 +23940,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
     fabric.Image.filters[key].fromObject = fabric.Image.filters.BaseFilter.fromObject;
   }
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
   'use strict';
 
@@ -22791,6 +24238,253 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.BlendColor.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
+(function(global) {
+  'use strict';
+
+  var fabric = global.fabric,
+      filters = fabric.Image.filters,
+      createClass = fabric.util.createClass;
+
+  /**
+   * Image Blend filter class
+   * @class fabric.Image.filter.BlendImage
+   * @memberOf fabric.Image.filters
+   * @extends fabric.Image.filters.BaseFilter
+   * @example
+   * var filter = new fabric.Image.filters.BlendColor({
+   *  color: '#000',
+   *  mode: 'multiply'
+   * });
+   *
+   * var filter = new fabric.Image.filters.BlendImage({
+   *  image: fabricImageObject,
+   *  mode: 'multiply',
+   *  alpha: 0.5
+   * });
+   * object.filters.push(filter);
+   * object.applyFilters();
+   * canvas.renderAll();
+   */
+
+  filters.BlendImage = createClass(filters.BaseFilter, /** @lends fabric.Image.filters.BlendImage.prototype */ {
+    type: 'BlendImage',
+
+    /**
+     * Color to make the blend operation with. default to a reddish color since black or white
+     * gives always strong result.
+     **/
+    image: null,
+
+    /**
+     * Blend mode for the filter: one of multiply, add, diff, screen, subtract,
+     * darken, lighten, overlay, exclusion, tint.
+     **/
+    mode: 'multiply',
+
+    /**
+     * alpha value. represent the strength of the blend color operation.
+     **/
+    alpha: 1,
+
+    vertexSource: 'attribute vec2 aPosition;\n' +
+      'attribute vec2 aTexCoord;\n' +
+      'varying vec2 vTexCoord;\n' +
+      'varying vec2 vTexCoord2;\n' +
+      'uniform mat3 uTransformMatrix;\n' +
+      'void main() {\n' +
+        'vTexCoord = aTexCoord;\n' +
+        'vTexCoord2 = (uTransformMatrix * vec3(aTexCoord, 1.0)).xy;\n' +
+        'gl_Position = vec4(aPosition * 2.0 - 1.0, 0.0, 1.0);\n' +
+      '}',
+
+    /**
+     * Fragment source for the Multiply program
+     */
+    fragmentSource: {
+      multiply: 'precision highp float;\n' +
+        'uniform sampler2D uTexture;\n' +
+        'uniform sampler2D uImage;\n' +
+        'uniform vec4 uColor;\n' +
+        'varying vec2 vTexCoord;\n' +
+        'varying vec2 vTexCoord2;\n' +
+        'void main() {\n' +
+          'vec4 color = texture2D(uTexture, vTexCoord);\n' +
+          'vec4 color2 = texture2D(uImage, vTexCoord2);\n' +
+          'color.rgba *= color2.rgba;\n' +
+          'gl_FragColor = color;\n' +
+        '}',
+      mask: 'precision highp float;\n' +
+        'uniform sampler2D uTexture;\n' +
+        'uniform sampler2D uImage;\n' +
+        'uniform vec4 uColor;\n' +
+        'varying vec2 vTexCoord;\n' +
+        'varying vec2 vTexCoord2;\n' +
+        'void main() {\n' +
+          'vec4 color = texture2D(uTexture, vTexCoord);\n' +
+          'vec4 color2 = texture2D(uImage, vTexCoord2);\n' +
+          'color.a = color2.a;\n' +
+          'gl_FragColor = color;\n' +
+        '}',
+    },
+
+    /**
+     * Retrieves the cached shader.
+     * @param {Object} options
+     * @param {WebGLRenderingContext} options.context The GL context used for rendering.
+     * @param {Object} options.programCache A map of compiled shader programs, keyed by filter type.
+     */
+    retrieveShader: function(options) {
+      var cacheKey = this.type + '_' + this.mode;
+      var shaderSource = this.fragmentSource[this.mode];
+      if (!options.programCache.hasOwnProperty(cacheKey)) {
+        options.programCache[cacheKey] = this.createProgram(options.context, shaderSource);
+      }
+      return options.programCache[cacheKey];
+    },
+
+    applyToWebGL: function(options) {
+      // load texture to blend.
+      var gl = options.context,
+          texture = this.createTexture(options.filterBackend, this.image);
+      this.bindAdditionalTexture(gl, texture, gl.TEXTURE1);
+      this.callSuper('applyToWebGL', options);
+      this.unbindAdditionalTexture(gl, gl.TEXTURE1);
+    },
+
+    createTexture: function(backend, image) {
+      return backend.getCachedTexture(image.cacheKey, image._element);
+    },
+
+    /**
+     * Calculate a transformMatrix to adapt the image to blend over
+     * @param {Object} options
+     * @param {WebGLRenderingContext} options.context The GL context used for rendering.
+     * @param {Object} options.programCache A map of compiled shader programs, keyed by filter type.
+     */
+    calculateMatrix: function() {
+      var image = this.image,
+          width = image._element.width,
+          height = image._element.height;
+      return [
+        1 / image.scaleX, 0, 0,
+        0, 1 / image.scaleY, 0,
+        -image.left / width, -image.top / height, 1
+      ];
+    },
+
+    /**
+     * Apply the Blend operation to a Uint8ClampedArray representing the pixels of an image.
+     *
+     * @param {Object} options
+     * @param {ImageData} options.imageData The Uint8ClampedArray to be filtered.
+     */
+    applyTo2d: function(options) {
+      var imageData = options.imageData,
+          resources = options.filterBackend.resources,
+          data = imageData.data, iLen = data.length,
+          width = options.imageData.width,
+          height = options.imageData.height,
+          tr, tg, tb, ta,
+          r, g, b, a,
+          canvas1, context, image = this.image, blendData;
+
+      if (!resources.blendImage) {
+        resources.blendImage = document.createElement('canvas');
+      }
+      canvas1 = resources.blendImage;
+      if (canvas1.width !== width || canvas1.height !== height) {
+        canvas1.width = width;
+        canvas1.height = height;
+      }
+      context = canvas1.getContext('2d');
+      context.setTransform(image.scaleX, 0, 0, image.scaleY, image.left, image.top);
+      context.drawImage(image._element, 0, 0, width, height);
+      blendData = context.getImageData(0, 0, width, height).data;
+      for (var i = 0; i < iLen; i += 4) {
+
+        r = data[i];
+        g = data[i + 1];
+        b = data[i + 2];
+        a = data[i + 3];
+
+        tr = blendData[i];
+        tg = blendData[i + 1];
+        tb = blendData[i + 2];
+        ta = blendData[i + 3];
+
+        switch (this.mode) {
+          case 'multiply':
+            data[i] = r * tr / 255;
+            data[i + 1] = g * tg / 255;
+            data[i + 2] = b * tb / 255;
+            data[i + 3] = a * ta / 255;
+            break;
+          case 'mask':
+            data[i + 3] = ta;
+            break;
+        }
+      }
+    },
+
+    /**
+     * Return WebGL uniform locations for this filter's shader.
+     *
+     * @param {WebGLRenderingContext} gl The GL canvas context used to compile this filter's shader.
+     * @param {WebGLShaderProgram} program This filter's compiled shader program.
+     */
+    getUniformLocations: function(gl, program) {
+      return {
+        uTransformMatrix: gl.getUniformLocation(program, 'uTransformMatrix'),
+        uImage: gl.getUniformLocation(program, 'uImage'),
+      };
+    },
+
+    /**
+     * Send data from this filter to its shader program's uniforms.
+     *
+     * @param {WebGLRenderingContext} gl The GL canvas context used to compile this filter's shader.
+     * @param {Object} uniformLocations A map of string uniform names to WebGLUniformLocation objects
+     */
+    sendUniformData: function(gl, uniformLocations) {
+      var matrix = this.calculateMatrix();
+      gl.uniform1i(uniformLocations.uImage, 1); // texture unit 1.
+      gl.uniformMatrix3fv(uniformLocations.uTransformMatrix, false, matrix);
+    },
+
+    /**
+     * Returns object representation of an instance
+     * @return {Object} Object representation of an instance
+     */
+    toObject: function() {
+      return {
+        type: this.type,
+        image: this.image && this.image.toObject(),
+        mode: this.mode,
+        alpha: this.alpha
+      };
+    }
+  });
+
+  /**
+   * Returns filter instance from an object representation
+   * @static
+   * @param {Object} object Object to create an instance from
+   * @param {function} callback to be invoked after filter creation
+   * @return {fabric.Image.filters.BlendImage} Instance of fabric.Image.filters.BlendImage
+   */
+  fabric.Image.filters.BlendImage.fromObject = function(object, callback) {
+    fabric.Image.fromObject(object.image, function(image) {
+      var options = fabric.util.object.clone(object);
+      options.image = image;
+      callback(new fabric.Image.filters.BlendImage(options));
+    });
+  };
+
+})(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -23203,6 +24897,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Resize.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -23311,6 +25007,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Contrast.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -23422,6 +25120,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Saturation.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -23637,6 +25337,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   filters.Blur.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -23764,6 +25466,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.Gamma.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -23832,6 +25536,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
     return instance;
   };
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -23928,6 +25634,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.Image.filters.HueRotation.fromObject = fabric.Image.filters.BaseFilter.fromObject;
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function(global) {
 
   'use strict';
@@ -25090,7 +26798,107 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
     }
   });
 
-  
+  /* _FROM_SVG_START_ */
+  /**
+   * List of attribute names to account for when parsing SVG element (used by {@link fabric.Text.fromElement})
+   * @static
+   * @memberOf fabric.Text
+   * @see: http://www.w3.org/TR/SVG/text.html#TextElement
+   */
+  fabric.Text.ATTRIBUTE_NAMES = fabric.SHARED_ATTRIBUTES.concat(
+    'x y dx dy font-family font-style font-weight font-size text-decoration text-anchor'.split(' '));
+
+  /**
+   * Default SVG font size
+   * @static
+   * @memberOf fabric.Text
+   */
+  fabric.Text.DEFAULT_SVG_FONT_SIZE = 16;
+
+  /**
+   * Returns fabric.Text instance from an SVG element (<b>not yet implemented</b>)
+   * @static
+   * @memberOf fabric.Text
+   * @param {SVGElement} element Element to parse
+   * @param {Function} callback callback function invoked after parsing
+   * @param {Object} [options] Options object
+   */
+  fabric.Text.fromElement = function(element, callback, options) {
+    if (!element) {
+      return callback(null);
+    }
+
+    var parsedAttributes = fabric.parseAttributes(element, fabric.Text.ATTRIBUTE_NAMES),
+        parsedAnchor = parsedAttributes.textAnchor || 'left';
+    options = fabric.util.object.extend((options ? clone(options) : { }), parsedAttributes);
+
+    options.top = options.top || 0;
+    options.left = options.left || 0;
+    if (parsedAttributes.textDecoration) {
+      var textDecoration = parsedAttributes.textDecoration;
+      if (textDecoration.indexOf('underline') !== -1) {
+        options.underline = true;
+      }
+      if (textDecoration.indexOf('overline') !== -1) {
+        options.overline = true;
+      }
+      if (textDecoration.indexOf('line-through') !== -1) {
+        options.linethrough = true;
+      }
+      delete options.textDecoration;
+    }
+    if ('dx' in parsedAttributes) {
+      options.left += parsedAttributes.dx;
+    }
+    if ('dy' in parsedAttributes) {
+      options.top += parsedAttributes.dy;
+    }
+    if (!('fontSize' in options)) {
+      options.fontSize = fabric.Text.DEFAULT_SVG_FONT_SIZE;
+    }
+
+    var textContent = '';
+
+    // The XML is not properly parsed in IE9 so a workaround to get
+    // textContent is through firstChild.data. Another workaround would be
+    // to convert XML loaded from a file to be converted using DOMParser (same way loadSVGFromString() does)
+    if (!('textContent' in element)) {
+      if ('firstChild' in element && element.firstChild !== null) {
+        if ('data' in element.firstChild && element.firstChild.data !== null) {
+          textContent = element.firstChild.data;
+        }
+      }
+    }
+    else {
+      textContent = element.textContent;
+    }
+
+    textContent = textContent.replace(/^\s+|\s+$|\n+/g, '').replace(/\s+/g, ' ');
+
+    var text = new fabric.Text(textContent, options),
+        textHeightScaleFactor = text.getScaledHeight() / text.height,
+        lineHeightDiff = (text.height + text.strokeWidth) * text.lineHeight - text.height,
+        scaledDiff = lineHeightDiff * textHeightScaleFactor,
+        textHeight = text.getScaledHeight() + scaledDiff,
+        offX = 0;
+    /*
+      Adjust positioning:
+        x/y attributes in SVG correspond to the bottom-left corner of text bounding box
+        fabric output by default at top, left.
+    */
+    if (parsedAnchor === 'center') {
+      offX = text.getScaledWidth() / 2;
+    }
+    if (parsedAnchor === 'right') {
+      offX = text.getScaledWidth();
+    }
+    text.set({
+      left: text.left - offX,
+      top: text.top - (textHeight - text.fontSize * (0.18 + text._fontSizeFraction)) / text.lineHeight
+    });
+    callback(text);
+  };
+  /* _FROM_SVG_END_ */
 
   /**
    * Returns fabric.Text instance from an object representation
@@ -25106,6 +26914,320 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
   fabric.util.createAccessors && fabric.util.createAccessors(fabric.Text);
 
 })(typeof exports !== 'undefined' ? exports : this);
+
+
+(function() {
+  fabric.util.object.extend(fabric.Text.prototype, /** @lends fabric.Text.prototype */ {
+    /**
+     * Returns true if object has no styling or no styling in a line
+     * @param {Number} lineIndex
+     * @return {Boolean}
+     */
+    isEmptyStyles: function(lineIndex) {
+      if (!this.styles) {
+        return true;
+      }
+      if (typeof lineIndex !== 'undefined' && !this.styles[lineIndex]) {
+        return true;
+      }
+      var obj = typeof lineIndex === 'undefined' ? this.styles : { line: this.styles[lineIndex] };
+      for (var p1 in obj) {
+        for (var p2 in obj[p1]) {
+          // eslint-disable-next-line no-unused-vars
+          for (var p3 in obj[p1][p2]) {
+            return false;
+          }
+        }
+      }
+      return true;
+    },
+
+    /**
+     * Returns true if object has a style property or has it ina specified line
+     * @param {Number} lineIndex
+     * @return {Boolean}
+     */
+    styleHas: function(property, lineIndex) {
+      if (!this.styles || !property || property === '') {
+        return false;
+      }
+      if (typeof lineIndex !== 'undefined' && !this.styles[lineIndex]) {
+        return false;
+      }
+      var obj = typeof lineIndex === 'undefined' ? this.styles : { line: this.styles[lineIndex] };
+      // eslint-disable-next-line
+      for (var p1 in obj) {
+        // eslint-disable-next-line
+        for (var p2 in obj[p1]) {
+          if (typeof obj[p1][p2][property] !== 'undefined') {
+            return true;
+          }
+        }
+      }
+      return false;
+    },
+
+    /**
+     * Check if characters in a text have a value for a property
+     * whose value matches the textbox's value for that property.  If so,
+     * the character-level property is deleted.  If the character
+     * has no other properties, then it is also deleted.  Finally,
+     * if the line containing that character has no other characters
+     * then it also is deleted.
+     *
+     * @param {string} property The property to compare between characters and text.
+     */
+    cleanStyle: function(property) {
+      if (!this.styles || !property || property === '') {
+        return false;
+      }
+      var obj = this.styles, stylesCount = 0, letterCount, foundStyle = false, style,
+          canBeSwapped = true, graphemeCount = 0;
+      // eslint-disable-next-line
+      for (var p1 in obj) {
+        letterCount = 0;
+        // eslint-disable-next-line
+        for (var p2 in obj[p1]) {
+          stylesCount++;
+          if (!foundStyle) {
+            style = obj[p1][p2][property];
+            foundStyle = true;
+          }
+          else if (obj[p1][p2][property] !== style) {
+            canBeSwapped = false;
+          }
+          if (obj[p1][p2][property] === this[property]) {
+            delete obj[p1][p2][property];
+          }
+          if (Object.keys(obj[p1][p2]).length !== 0) {
+            letterCount++;
+          }
+          else {
+            delete obj[p1][p2];
+          }
+        }
+        if (letterCount === 0) {
+          delete obj[p1];
+        }
+      }
+      // if every grapheme has the same style set then
+      // delete those styles and set it on the parent
+      for (var i = 0; i < this._textLines.length; i++) {
+        graphemeCount += this._textLines[i].length;
+      }
+      if (canBeSwapped && stylesCount === graphemeCount) {
+        this[property] = style;
+        this.removeStyle(property);
+      }
+    },
+
+    /**
+     * Remove a style property or properties from all individual character styles
+     * in a text object.  Deletes the character style object if it contains no other style
+     * props.  Deletes a line style object if it contains no other character styles.
+     *
+     * @param {String} props The property to remove from character styles.
+     */
+    removeStyle: function(property) {
+      if (!this.styles || !property || property === '') {
+        return;
+      }
+      var obj = this.styles, line, lineNum, charNum;
+      for (lineNum in obj) {
+        line = obj[lineNum];
+        for (charNum in line) {
+          delete line[charNum][property];
+          if (Object.keys(line[charNum]).length === 0) {
+            delete line[charNum];
+          }
+        }
+        if (Object.keys(line).length === 0) {
+          delete obj[lineNum];
+        }
+      }
+    },
+
+    /**
+     * @private
+     */
+    _extendStyles: function(index, styles) {
+      var loc = this.get2DCursorLocation(index);
+
+      if (!this._getLineStyle(loc.lineIndex)) {
+        this._setLineStyle(loc.lineIndex, {});
+      }
+
+      if (!this._getStyleDeclaration(loc.lineIndex, loc.charIndex)) {
+        this._setStyleDeclaration(loc.lineIndex, loc.charIndex, {});
+      }
+
+      fabric.util.object.extend(this._getStyleDeclaration(loc.lineIndex, loc.charIndex), styles);
+    },
+
+    /**
+     * Returns 2d representation (lineIndex and charIndex) of cursor (or selection start)
+     * @param {Number} [selectionStart] Optional index. When not given, current selectionStart is used.
+     * @param {Boolean} [skipWrapping] consider the location for unwrapped lines. usefull to manage styles.
+     */
+    get2DCursorLocation: function(selectionStart, skipWrapping) {
+      if (typeof selectionStart === 'undefined') {
+        selectionStart = this.selectionStart;
+      }
+      var lines = skipWrapping ? this._unwrappedTextLines : this._textLines;
+      var len = lines.length;
+      for (var i = 0; i < len; i++) {
+        if (selectionStart <= lines[i].length) {
+          return {
+            lineIndex: i,
+            charIndex: selectionStart
+          };
+        }
+        selectionStart -= lines[i].length + 1;
+      }
+      return {
+        lineIndex: i - 1,
+        charIndex: lines[i - 1].length < selectionStart ? lines[i - 1].length : selectionStart
+      };
+    },
+
+    /**
+     * Gets style of a current selection/cursor (at the start position)
+     * if startIndex or endIndex are not provided, slectionStart or selectionEnd will be used.
+     * @param {Number} [startIndex] Start index to get styles at
+     * @param {Number} [endIndex] End index to get styles at, if not specified selectionEnd or startIndex + 1
+     * @param {Boolean} [complete] get full style or not
+     * @return {Array} styles an array with one, zero or more Style objects
+     */
+    getSelectionStyles: function(startIndex, endIndex, complete) {
+      if (typeof startIndex === 'undefined') {
+        startIndex = this.selectionStart || 0;
+      }
+      if (typeof endIndex === 'undefined') {
+        endIndex = this.selectionEnd || startIndex;
+      }
+      var styles = [];
+      for (var i = startIndex; i < endIndex; i++) {
+        styles.push(this.getStyleAtPosition(i, complete));
+      }
+      return styles;
+    },
+
+    /**
+     * Gets style of a current selection/cursor position
+     * @param {Number} position  to get styles at
+     * @param {Boolean} [complete] full style if true
+     * @return {Object} style Style object at a specified index
+     * @private
+     */
+    getStyleAtPosition: function(position, complete) {
+      var loc = this.get2DCursorLocation(position),
+          style = complete ? this.getCompleteStyleDeclaration(loc.lineIndex, loc.charIndex) :
+            this._getStyleDeclaration(loc.lineIndex, loc.charIndex);
+      return style || {};
+    },
+
+    /**
+     * Sets style of a current selection, if no selection exist, do not set anything.
+     * @param {Object} [styles] Styles object
+     * @param {Number} [startIndex] Start index to get styles at
+     * @param {Number} [endIndex] End index to get styles at, if not specified selectionEnd or startIndex + 1
+     * @return {fabric.IText} thisArg
+     * @chainable
+     */
+    setSelectionStyles: function(styles, startIndex, endIndex) {
+      if (typeof startIndex === 'undefined') {
+        startIndex = this.selectionStart || 0;
+      }
+      if (typeof endIndex === 'undefined') {
+        endIndex = this.selectionEnd || startIndex;
+      }
+      for (var i = startIndex; i < endIndex; i++) {
+        this._extendStyles(i, styles);
+      }
+      /* not included in _extendStyles to avoid clearing cache more than once */
+      this._forceClearCache = true;
+      return this;
+    },
+
+    /**
+     * get the reference, not a clone, of the style object for a given character
+     * @param {Number} lineIndex
+     * @param {Number} charIndex
+     * @return {Object} style object
+     */
+    _getStyleDeclaration: function(lineIndex, charIndex) {
+      var lineStyle = this.styles && this.styles[lineIndex];
+      if (!lineStyle) {
+        return null;
+      }
+      return lineStyle[charIndex];
+    },
+
+    /**
+     * return a new object that contains all the style property for a character
+     * the object returned is newly created
+     * @param {Number} lineIndex of the line where the character is
+     * @param {Number} charIndex position of the character on the line
+     * @return {Object} style object
+     */
+    getCompleteStyleDeclaration: function(lineIndex, charIndex) {
+      var style = this._getStyleDeclaration(lineIndex, charIndex) || { },
+          styleObject = { }, prop;
+      for (var i = 0; i < this._styleProperties.length; i++) {
+        prop = this._styleProperties[i];
+        styleObject[prop] = typeof style[prop] === 'undefined' ? this[prop] : style[prop];
+      }
+      return styleObject;
+    },
+
+    /**
+     * @param {Number} lineIndex
+     * @param {Number} charIndex
+     * @param {Object} style
+     * @private
+     */
+    _setStyleDeclaration: function(lineIndex, charIndex, style) {
+      this.styles[lineIndex][charIndex] = style;
+    },
+
+    /**
+     *
+     * @param {Number} lineIndex
+     * @param {Number} charIndex
+     * @private
+     */
+    _deleteStyleDeclaration: function(lineIndex, charIndex) {
+      delete this.styles[lineIndex][charIndex];
+    },
+
+    /**
+     * @param {Number} lineIndex
+     * @private
+     */
+    _getLineStyle: function(lineIndex) {
+      return this.styles[lineIndex];
+    },
+
+    /**
+     * @param {Number} lineIndex
+     * @param {Object} style
+     * @private
+     */
+    _setLineStyle: function(lineIndex, style) {
+      this.styles[lineIndex] = style;
+    },
+
+    /**
+     * @param {Number} lineIndex
+     * @private
+     */
+    _deleteLineStyle: function(lineIndex) {
+      delete this.styles[lineIndex];
+    }
+  });
+})();
+
+
 (function() {
 
   function parseDecoration(object) {
@@ -25617,6 +27739,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
     fabric.Object._fromObject('IText', object, callback, 'text');
   };
 })();
+
+
 (function() {
 
   var clone = fabric.util.object.clone;
@@ -26510,6 +28634,8 @@ fabric.Image.filters.BaseFilter.fromObject = function(object, callback) {
     }
   });
 })();
+
+
 fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.prototype */ {
   /**
    * Initializes "dbclick" event handler
@@ -26708,10 +28834,11 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
    * @private
    */
   _getNewSelectionStartFromOffset: function(mouseOffset, prevWidth, width, index, jlen) {
-
+    // we need Math.abs because when width is after the last char, the offset is given as 1, while is 0
     var distanceBtwLastCharAndCursor = mouseOffset.x - prevWidth,
         distanceBtwNextCharAndCursor = width - mouseOffset.x,
-        offset = distanceBtwNextCharAndCursor > distanceBtwLastCharAndCursor ? 0 : 1,
+        offset = distanceBtwNextCharAndCursor > distanceBtwLastCharAndCursor ||
+          distanceBtwNextCharAndCursor < 0 ? 0 : 1,
         newSelectionStart = index + offset;
     // if object is horizontally flipped, mirror cursor location from the end
     if (this.flipX) {
@@ -26725,6 +28852,8 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
     return newSelectionStart;
   }
 });
+
+
 fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.prototype */ {
 
   /**
@@ -27363,6 +29492,235 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
   }
 });
 
+
+/* _TO_SVG_START_ */
+(function() {
+  var toFixed = fabric.util.toFixed,
+      NUM_FRACTION_DIGITS = fabric.Object.NUM_FRACTION_DIGITS;
+
+  fabric.util.object.extend(fabric.Text.prototype, /** @lends fabric.Text.prototype */ {
+
+    /**
+     * Returns SVG representation of an instance
+     * @param {Function} [reviver] Method for further parsing of svg representation.
+     * @return {String} svg representation of an instance
+     */
+    toSVG: function(reviver) {
+      var markup = this._createBaseSVGMarkup(),
+          offsets = this._getSVGLeftTopOffsets(),
+          textAndBg = this._getSVGTextAndBg(offsets.textTop, offsets.textLeft);
+      this._wrapSVGTextAndBg(markup, textAndBg);
+
+      return reviver ? reviver(markup.join('')) : markup.join('');
+    },
+
+    /**
+     * @private
+     */
+    _getSVGLeftTopOffsets: function() {
+      return {
+        textLeft: -this.width / 2,
+        textTop: -this.height / 2,
+        lineTop: this.getHeightOfLine(0)
+      };
+    },
+
+    /**
+     * @private
+     */
+    _wrapSVGTextAndBg: function(markup, textAndBg) {
+      var noShadow = true, filter = this.getSvgFilter(),
+          style = filter === '' ? '' : ' style="' + filter + '"';
+
+      markup.push(
+        '\t<g ', this.getSvgId(), 'transform="', this.getSvgTransform(), this.getSvgTransformMatrix(), '"',
+          style, '>\n',
+          textAndBg.textBgRects.join(''),
+          '\t\t<text xml:space="preserve" ',
+            (this.fontFamily ? 'font-family="' + this.fontFamily.replace(/"/g, '\'') + '" ' : ''),
+            (this.fontSize ? 'font-size="' + this.fontSize + '" ' : ''),
+            (this.fontStyle ? 'font-style="' + this.fontStyle + '" ' : ''),
+            (this.fontWeight ? 'font-weight="' + this.fontWeight + '" ' : ''),
+            (this.textDecoration ? 'text-decoration="' + this.textDecoration + '" ' : ''),
+            'style="', this.getSvgStyles(noShadow), '" >\n',
+            textAndBg.textSpans.join(''),
+          '\t\t</text>\n',
+        '\t</g>\n'
+      );
+    },
+
+    /**
+     * @private
+     * @param {Number} textTopOffset Text top offset
+     * @param {Number} textLeftOffset Text left offset
+     * @return {Object}
+     */
+    _getSVGTextAndBg: function(textTopOffset, textLeftOffset) {
+      var textSpans = [],
+          textBgRects = [],
+          height = textTopOffset, lineOffset;
+      // bounding-box background
+      this._setSVGBg(textBgRects);
+
+      // text and text-background
+      for (var i = 0, len = this._textLines.length; i < len; i++) {
+        lineOffset = this._getLineLeftOffset(i);
+        if (this.textBackgroundColor || this.styleHas('textBackgroundColor', i)) {
+          this._setSVGTextLineBg(textBgRects, i, textLeftOffset + lineOffset, height);
+        }
+        this._setSVGTextLineText(textSpans, i, textLeftOffset + lineOffset, height);
+        height += this.getHeightOfLine(i);
+      }
+
+      return {
+        textSpans: textSpans,
+        textBgRects: textBgRects
+      };
+    },
+
+    /**
+     * @private
+     */
+    _createTextCharSpan: function(_char, styleDecl, left, top) {
+      var styleProps = this.getSvgSpanStyles(styleDecl, _char !== _char.trim()),
+          fillStyles = styleProps ? 'style="' + styleProps + '"' : '';
+
+      return [
+        '\t\t\t<tspan x="', toFixed(left, NUM_FRACTION_DIGITS), '" y="',
+        toFixed(top, NUM_FRACTION_DIGITS), '" ',
+        fillStyles, '>',
+        fabric.util.string.escapeXml(_char),
+        '</tspan>\n'
+      ].join('');
+    },
+
+    _setSVGTextLineText: function(textSpans, lineIndex, textLeftOffset, textTopOffset) {
+      // set proper line offset
+      var lineHeight = this.getHeightOfLine(lineIndex),
+          actualStyle,
+          nextStyle,
+          charsToRender = '',
+          charBox, style,
+          boxWidth = 0,
+          line = this._textLines[lineIndex],
+          timeToRender;
+
+      textTopOffset += lineHeight * (1 - this._fontSizeFraction) / this.lineHeight;
+      for (var i = 0, len = line.length - 1; i <= len; i++) {
+        timeToRender = i === len || this.charSpacing;
+        charsToRender += line[i];
+        charBox = this.__charBounds[lineIndex][i];
+        if (boxWidth === 0) {
+          textLeftOffset += charBox.kernedWidth - charBox.width;
+        }
+        boxWidth += charBox.kernedWidth;
+        if (this.textAlign === 'justify' && !timeToRender) {
+          if (this._reSpaceAndTab.test(line[i])) {
+            timeToRender = true;
+          }
+        }
+        if (!timeToRender) {
+          // if we have charSpacing, we render char by char
+          actualStyle = actualStyle || this.getCompleteStyleDeclaration(lineIndex, i);
+          nextStyle = this.getCompleteStyleDeclaration(lineIndex, i + 1);
+          timeToRender = this._hasStyleChanged(actualStyle, nextStyle);
+        }
+        if (timeToRender) {
+          style = this._getStyleDeclaration(lineIndex, i) || { };
+          textSpans.push(this._createTextCharSpan(charsToRender, style, textLeftOffset, textTopOffset));
+          charsToRender = '';
+          actualStyle = nextStyle;
+          textLeftOffset += boxWidth;
+          boxWidth = 0;
+        }
+      }
+    },
+
+    _pushTextBgRect: function(textBgRects, color, left, top, width, height) {
+      textBgRects.push(
+        '\t\t<rect ',
+          this._getFillAttributes(color),
+          ' x="',
+          toFixed(left, NUM_FRACTION_DIGITS),
+          '" y="',
+          toFixed(top, NUM_FRACTION_DIGITS),
+          '" width="',
+          toFixed(width, NUM_FRACTION_DIGITS),
+          '" height="',
+          toFixed(height, NUM_FRACTION_DIGITS),
+        '"></rect>\n');
+    },
+
+    _setSVGTextLineBg: function(textBgRects, i, leftOffset, textTopOffset) {
+      var line = this._textLines[i],
+          heightOfLine = this.getHeightOfLine(i) / this.lineHeight,
+          boxWidth = 0,
+          boxStart = 0,
+          charBox, currentColor,
+          lastColor = this.getValueOfPropertyAt(i, 0, 'textBackgroundColor');
+      for (var j = 0, jlen = line.length; j < jlen; j++) {
+        charBox = this.__charBounds[i][j];
+        currentColor = this.getValueOfPropertyAt(i, j, 'textBackgroundColor');
+        if (currentColor !== lastColor) {
+          lastColor && this._pushTextBgRect(textBgRects, lastColor, leftOffset + boxStart,
+            textTopOffset, boxWidth, heightOfLine);
+          boxStart = charBox.left;
+          boxWidth = charBox.width;
+          lastColor = currentColor;
+        }
+        else {
+          boxWidth += charBox.kernedWidth;
+        }
+      }
+      currentColor && this._pushTextBgRect(textBgRects, currentColor, leftOffset + boxStart,
+        textTopOffset, boxWidth, heightOfLine);
+    },
+
+    /**
+     * Adobe Illustrator (at least CS5) is unable to render rgba()-based fill values
+     * we work around it by "moving" alpha channel into opacity attribute and setting fill's alpha to 1
+     *
+     * @private
+     * @param {*} value
+     * @return {String}
+     */
+    _getFillAttributes: function(value) {
+      var fillColor = (value && typeof value === 'string') ? new fabric.Color(value) : '';
+      if (!fillColor || !fillColor.getSource() || fillColor.getAlpha() === 1) {
+        return 'fill="' + value + '"';
+      }
+      return 'opacity="' + fillColor.getAlpha() + '" fill="' + fillColor.setAlpha(1).toRgb() + '"';
+    },
+
+    /**
+     * @private
+     */
+    _getSVGLineTopOffset: function(lineIndex) {
+      var lineTopOffset = 0, lastHeight = 0;
+      for (var j = 0; j < lineIndex; j++) {
+        lineTopOffset += this.getHeightOfLine(j);
+      }
+      lastHeight = this.getHeightOfLine(j);
+      return {
+        lineTop: lineTopOffset,
+        offset: (this._fontSizeMult - this._fontSizeFraction) * lastHeight / (this.lineHeight * this._fontSizeMult)
+      };
+    },
+
+    /**
+     * Returns styles-string for svg-export
+     * @param {Boolean} skipShadow a boolean to skip shadow filter output
+     * @return {String}
+     */
+    getSvgStyles: function(skipShadow) {
+      var svgStyle = fabric.Object.prototype.getSvgStyles.call(this, skipShadow);
+      return svgStyle + ' white-space: pre;';
+    },
+  });
+})();
+/* _TO_SVG_END_ */
+
+
 (function(global) {
 
   'use strict';
@@ -27739,6 +30097,8 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
     return fabric.Object._fromObject('Textbox', object, callback, 'text');
   };
 })(typeof exports !== 'undefined' ? exports : this);
+
+
 (function() {
 
   /**
@@ -27779,6 +30139,8 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
 
   });
 })();
+
+
 (function() {
 
   if (typeof document !== 'undefined' && typeof window !== 'undefined') {
@@ -27990,3 +30352,4 @@ fabric.util.object.extend(fabric.IText.prototype, /** @lends fabric.IText.protot
   }
 
 })();
+

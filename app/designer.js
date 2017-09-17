@@ -8,7 +8,6 @@ class Designer extends  Component {
       <div>
         <Canvas/>
       </div>
-
     );
   }
 }

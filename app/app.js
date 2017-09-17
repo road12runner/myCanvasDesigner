@@ -15,8 +15,12 @@ class App extends Component {
         <Header/>
         <Designer/>
         <p>
-          Used libraries: <span className="small-text">React.js, Fabric.js, Lodash.js, Bootstrap</span>
+          Used libraries: <span className="small-text">React.js, Fabric.js, Lodash.js</span>
         </p>
+        <p>
+          <span className="small-text">Total minified project size ~ 600Kb</span>
+        </p>
+
       </div>
     )
   }

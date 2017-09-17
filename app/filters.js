@@ -45,15 +45,6 @@ class Filters extends  Component {
           <button className='btn btn-primary btn-right' onClick={()=> this.props.nextStep()}>Next</button>
           <button className='btn btn-primary btn-right' onClick={()=> this.props.previousStep()}>Back</button>
         </div>
-
-
-        <p>
-          <label><span>Grayscale:</span> <input type="checkbox" id="grayscale" checked={filters.grayscale} onChange={this.handleInputChange}/></label><br/>
-          <label><span>Avg.</span> <input type="radio" id="average" name="grayscale" checked={filters.average} onChange={this.handleInputChange}/></label>
-          <label><span>Lum.</span> <input type="radio" id="lightness" name="grayscale" checked={filters.lightness}  onChange={this.handleInputChange}/></label>
-          <label><span>Light.</span> <input type="radio" id="luminosity" name="grayscale" checked={filters.luminosity}  onChange={this.handleInputChange}/></label>
-        </p>
-        <h3>Colormatrix filters:</h3>
         <div className="buttons-box">
           <button id="invert" className={this.buttonClassName(filters.invert)} onClick={this.handleButtonClick}>Invert</button>
           <button id="sepia" className={this.buttonClassName(filters.sepia)} onClick={this.handleButtonClick}>Sepia</button>
@@ -63,6 +54,12 @@ class Filters extends  Component {
           <button id="kodachrome" className={this.buttonClassName(filters.kodachrome)} onClick={this.handleButtonClick}>Kodachrome</button>
           <button id="technicolor" className={this.buttonClassName(filters.technicolor)} onClick={this.handleButtonClick}>Technicolor</button>
           <button id="polaroid" className={this.buttonClassName(filters.polaroid)} onClick={this.handleButtonClick}>Polaroid</button>
+        </div>
+        <div className="buttons-box border-box inline-box">
+          <button id="grayscale" className={this.buttonClassName(filters.grayscale)} onClick={this.handleButtonClick}>Grayscale</button>
+          <span>Avg.</span> <input type="radio" className="radio" id="average" name="grayscale" checked={filters.average} onChange={this.handleInputChange}/>
+          <span>Lum.</span> <input type="radio" className="radio"id="luminosity" name="grayscale" checked={filters.luminosity}  onChange={this.handleInputChange}/>
+          <span>Light.</span> <input type="radio" className="radio"id="lightness" name="grayscale" checked={filters.lightness}  onChange={this.handleInputChange}/>
         </div>
         <div className="buttons-box border-box inline-box">
           <button id="removeColor" className={this.buttonClassName(filters.removeColor)} onClick={this.handleButtonClick}>Remove color</button>

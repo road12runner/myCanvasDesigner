@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import TransitionGroup  from 'react-transition-group/TransitionGroup';
+import Transition from 'react-transition-group/Transition';
+
 import {submitImage, nextStep, previousStep} from './actions'
 import Filters from'./filters';
 import Gallery from './gallery';
@@ -87,16 +90,8 @@ class Canvas extends  Component {
       oImg.scaleToHeight(153);
       oImg.scaleToWidth(261);
       oImg.set({
-        left: -250,
+        left: -100,
         top:  100,
-        // fill: 'rgba(0,0,0,0)',
-        // stroke:'red',
-        // strokeWidth:10,
-        //clipTo: roundedCorners.bind(oImg),
-        // clipTo: function (ctx) {
-        //   ctx.arc(0, 0, 300, 0, Math.PI * 2, true);
-        // }
-
       });
       canvas.add(oImg);
       oImg.animate('left', 100, {
@@ -116,8 +111,14 @@ class Canvas extends  Component {
             stroke: 'red',
             fill: 'rgba(0,0,0,0)',
             width: 261,
-            height: 153
+            height: 153,
           });
+          rect.hasBorders = false;
+          rect.hasControls = false;
+          rect.set('selectable', false);
+          rect.lockMovementX = true;
+          rect.lockMovementY = true;
+
           canvas.add(rect);
         }
       });
@@ -136,10 +137,6 @@ class Canvas extends  Component {
       oImg.set({
         left: -300,
         top:  80,
-        //clipTo: roundedCorners.bind(oImg),
-        // clipTo: function (ctx) {
-        //   ctx.arc(0, 0, 300, 0, Math.PI * 2, true);
-        // }
       });
       canvas.insertAt(oImg, 0).setActiveObject(oImg);
 
@@ -179,8 +176,8 @@ class Canvas extends  Component {
 
   onAddText(){
     const canvas = this.canvas;
-    const text1 = this.textInput.value;
-    const text = new fabric.Text( 'Hello', { left: 120, top: -320, fill: '#fff' });
+    const txt = this.textInput.value;
+    const text = new fabric.Text(txt, { left: 120, top: 0, fill: '#fff' });
     canvas.add(text);
 
     text.animate('top', 120, {
@@ -261,14 +258,22 @@ class Canvas extends  Component {
 
     const filterList= [];
 
-
     filterList[4] = filters.brownie && new f.Brownie();
     filterList[9] = filters.vintage && new f.Vintage();
     filterList[14] = filters.technicolor && new f.Technicolor();
     filterList[15] = filters.polaroid && new f.Polaroid();
     filterList[18] = filters.kodachrome && new f.Kodachrome();
     filterList[19] = filters.blackwhite && new f.BlackWhite();
-    filterList[0] = filters.grayscale && new f.Grayscale();
+
+    const grayScaleMode = filters.average ? 'average' : filters.luminosity ? 'luminosity' : filters.lightness ? 'lightness' : '';
+    if (grayScaleMode) {
+      filterList[0] = filters.grayscale && new f.Grayscale({
+          mode: grayScaleMode
+        });
+    } else {
+      filterList[0] = filters.grayscale && new f.Grayscale();
+
+    }
     filterList[1] = filters.invert && new f.Invert();
     filterList[2] = filters.removeColor && new f.RemoveColor({
             distance: filters.removeColorDistance,
@@ -345,56 +350,119 @@ class Canvas extends  Component {
             {this.renderCoverageMessage()}
           </div>
         </div>
-        <div>
+        <TransitionGroup>
           {this.renderTools()}
-        </div>
+        </TransitionGroup>
       </div>
     );
   }
 
   renderTools() {
     console.log('step', this.props.currentStep);
-    switch(STATES[this.props.currentStep]) {
-      case 'background':
-        return <Gallery/>;
-      case 'filters':
+    const duration = 300;
+    const defaultStyle = {
+      transition: `opacity ${duration}ms ease-in-out`,
+      opacity: 0,
+    };
 
-        return <Filters/>;
+    const transitionStyles = {
+      entering: { opacity: 0 },
+      entered:  { opacity: 1 },
+      exiting: {opacity: 0},
+      exited: {opacity : 0},
+      unmounted: {opacity: 0}
+    };
+
+    switch(STATES[this.props.currentStep]) {
+
+      case 'background':
+        return (
+          <Transition key='background' in={true} timeout={duration} mountOnEnter={true} unmountOnExit={true} appear={true}>
+            {(state) => (
+              <div style={{
+                ...defaultStyle,
+                ...transitionStyles[state]
+              }}>
+                <Gallery/>
+              </div>
+            )}
+          </Transition>
+        );
+      case 'filters':
+        return (
+          <Transition key='filters' in={true} timeout={duration} mountOnEnter={true} unmountOnExit={true} appear={true}>
+            {(state) => (
+              <div style={{
+                ...defaultStyle,
+                ...transitionStyles[state]
+              }}>
+                <Filters/>
+              </div>
+            )}
+          </Transition>
+        );
       case 'logo' :
         return (
-          <div>
-            <div className="form-group">
-              <button className="btn bnt-primary" onClick={this.onAddLogo}>Add Logo</button>
-            </div>
-            <div>
-              <button className='btn btn-primary btn-right' onClick={()=> this.props.nextStep()}>Next</button>
-              <button className='btn btn-primary btn-right' onClick={()=> this.props.previousStep()}>Back</button>
-            </div>
-          </div>
-          );
+          <Transition key='logo' in={true} timeout={duration} mountOnEnter={true} unmountOnExit={true} appear={true}>
+            {(state) => (
+              <div style={{
+                ...defaultStyle,
+                ...transitionStyles[state]
+              }}>
+                <div>
+                  <div className="form-group">
+                    <button className="btn bnt-primary" onClick={this.onAddLogo}>Add Logo</button>
+                  </div>
+                  <div>
+                    <button className='btn btn-primary btn-right' onClick={()=> this.props.nextStep()}>Next</button>
+                    <button className='btn btn-primary btn-right' onClick={()=> this.props.previousStep()}>Back</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Transition>
+        );
       case 'text':
-        return(
-          <div>
-            <div className="form-group">
-              <input type="text" className="form-control" ref={(input) => { this.textInput = input; }}/>
-              <button className="btn bnt-primary" onClick={this.onAddText}>Add Text</button>
-            </div>
-            <div>
-              <button className='btn btn-primary btn-right' onClick={()=> this.props.nextStep()}>Next</button>
-              <button className='btn btn-primary btn-right' onClick={()=> this.props.previousStep()}>Back</button>
-            </div>
-          </div>
+        return (
+          <Transition key='text' in={true} timeout={duration} mountOnEnter={true} unmountOnExit={true} appear={true}>
+            {(state) => (
+              <div style={{
+                ...defaultStyle,
+                ...transitionStyles[state]
+              }}>
+                <div>
+                  <div className="form-group">
+                    <input type="text" className="form-control" ref={(input) => { this.textInput = input; }}/>
+                    <button className="btn bnt-primary" onClick={this.onAddText}>Add Text</button>
+                  </div>
+                  <div>
+                    <button className='btn btn-primary btn-right' onClick={()=> this.props.nextStep()}>Next</button>
+                    <button className='btn btn-primary btn-right' onClick={()=> this.props.previousStep()}>Back</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Transition>
         );
       case 'submit':
         return(
-          <div>
-            <div className="form-group">
-              <button className="btn btn-success" onClick={this.onSubmit}>Submit</button>
-            </div>
-            <div>
-              <button className='btn btn-primary pull-right' onClick={()=> this.props.previousStep()}>Back</button>
-            </div>
-          </div>
+          <Transition key='submit' in={true} timeout={duration} mountOnEnter={true} unmountOnExit={true} appear={true}>
+            {(state) => (
+              <div style={{
+                ...defaultStyle,
+                ...transitionStyles[state]
+              }}>
+                <div>
+                  <div className="form-group">
+                    <button className="btn btn-success" onClick={this.onSubmit}>Submit</button>
+                  </div>
+                  <div>
+                    <button className='btn btn-primary pull-right' onClick={()=> this.props.previousStep()}>Back</button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Transition>
         );
 
       default:

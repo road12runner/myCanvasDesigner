@@ -3,6 +3,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 
 module.exports = {
+  devtool: 'eval',
   entry: "./app/index.js",
   output: {
     path: path.resolve('dist'),
